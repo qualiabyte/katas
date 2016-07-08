@@ -105,8 +105,8 @@ class Operation extends Expression {
   }
 
   static precedence(op) {
-    // if (op instanceof ExpressionStart) return 4
-    // if (op instanceof ExpressionEnd)   return 4
+    if (op instanceof ExpressionStart) return 4
+    if (op instanceof ExpressionEnd)   return 4
     if (op instanceof Multiplication)  return 3
     if (op instanceof Division)        return 3
     if (op instanceof Modulus)          return 3
@@ -121,7 +121,9 @@ class Operation extends Expression {
   }
 }
 
-class ExpressionStart extends Node {
+class ExpressionBoundary extends Node {}
+
+class ExpressionStart extends ExpressionBoundary {
   constructor(token) {
     super()
     this.type = 'ExpressionStart'
@@ -129,7 +131,7 @@ class ExpressionStart extends Node {
   }
 }
 
-class ExpressionEnd extends Node {
+class ExpressionEnd extends ExpressionBoundary {
   constructor(token) {
     super()
     this.type = 'ExpressionEnd'
@@ -320,9 +322,7 @@ class Parser {
     else if (rule instanceof FunctionalOperation) {
       let body = this.stack.pop()
       let operation = this.stack.pop()
-      let functional = this.top()
-
-      this.printStack()
+      let functional = this.stack.pop()
 
       if (!(body instanceof Expression))
         throw new Error("Expected expression for functional body at: ", body)
@@ -333,6 +333,8 @@ class Parser {
       operation.left = functional
       operation.right = body
       functional.body = body
+
+      this.stack.push(functional)
     }
     else if (rule instanceof Assignment) {
       let value = this.stack.pop()
@@ -379,17 +381,25 @@ class Parser {
       let last = this.last()
       let prev = this.prev()
 
+      // Functional Keyword
       if (top instanceof Functional) {
         this.reduce(top)
         continue
       }
 
+      // Expression Start
+      if (top instanceof ExpressionStart) {
+        this.shift()
+        continue
+      }
+
+      // Expression End
       if (top instanceof ExpressionEnd) {
         if (prev instanceof ExpressionStart) {
           let end = this.stack.pop()
           let inner = this.stack.pop()
           let start = this.stack.pop()
-          let group = new ExpressionGroup()
+          let group = new ExpressionGroup('G')
           group.inner = inner instanceof ExpressionGroup
             ? inner.inner
             : inner
@@ -402,16 +412,27 @@ class Parser {
         }
       }
 
+      // Functional Operation
+      if (top instanceof Expression &&
+          last instanceof FunctionalOperation &&
+          prev instanceof Functional) {
+        if (current instanceof BinaryOperation &&
+            current.compare(last) >= 0) {
+          this.shift()
+          continue
+        }
+        else {
+          this.reduce(last)
+          continue
+        }
+      }
+
+      // Operation
       if (last instanceof Operation) {
-        if (current instanceof Operation) {
-          if (last.compare(current) > 0) {
-            this.reduce(last)
-            continue
-          }
-          else {
-            this.shift()
-            continue
-          }
+        if (current instanceof Operation &&
+            current.compare(last) >= 0) {
+          this.shift()
+          continue
         }
         else {
           this.reduce(last)
