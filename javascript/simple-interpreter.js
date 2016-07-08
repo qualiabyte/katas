@@ -280,8 +280,13 @@ class Assignment extends BinaryOperation {
     let name = variable.name
     let value = variable.expression.evaluate(context)
 
+    let isConflicting = context.functions.hasOwnProperty(name)
+    if (isConflicting)
+      throw new Error(
+        `Variable assignment for '${name}' conflicts with existing function.`
+      )
+
     context.vars[name] = value
-    variable._value = value
     return value
   }
 }
