@@ -28,6 +28,10 @@ class Node {
   evaluate(context) {
     return this.value
   }
+
+  children() {
+    return []
+  }
 }
 
 class AST extends Node {
@@ -42,6 +46,10 @@ class AST extends Node {
 
   evaluate(context) {
     return this.root.evaluate(context)
+  }
+
+  children() {
+    return [ this.root ]
   }
 }
 
@@ -155,6 +163,9 @@ class ExpressionGroup extends Expression {
   evaluate(context) {
     return this.inner.evaluate(context)
   }
+  children() {
+    return [ this.inner ]
+  }
 }
 
 class BinaryOperation extends Operation {
@@ -164,6 +175,9 @@ class BinaryOperation extends Operation {
     this.token = token
     this.left = null
     this.right = null
+  }
+  children() {
+    return [ this.left, this.right ]
   }
 }
 
@@ -189,6 +203,9 @@ class FunctionalOperation extends BinaryOperation {
   get value() {
     return ""
   }
+  get functional() {
+    return this.left
+  }
   evaluate(context) {
     let declaration = this
     let functional = this.left
@@ -196,15 +213,51 @@ class FunctionalOperation extends BinaryOperation {
     let params = functional.params
     let body = functional.body
 
+    console.log("Functional: ", functional)
+
     // Check for conflicting variable
     if (context.vars[name])
       throw new Error(`Function declaration for '${name}' conflicts with existing variable`)
 
-    // Todo: Check for undefined variables
-    // console.log("Functional: ", functional)
+    // Check for undefined variable references
+    this.checkVariables()
 
     // Add function to context
     context.functions[name] = functional
+  }
+
+  // Checks expression for undefined variable references.
+  checkVariables(expression, context) {
+    if (!expression)
+      expression = this.functional.body
+
+    // Build context for params
+    if (!context) {
+      context = {}
+      this.functional.params.forEach(
+        param => {
+          context[param] = true
+        }
+      )
+    }
+
+    // Check the expression
+    if (expression instanceof Variable) {
+      let variable = expression
+      let name = variable.name
+      let isDefinedParam = context[name]
+      if (!isDefinedParam)
+        throw new Error(
+          `Function '${this.functional.name}' references undefined variable '${name}'.`
+        )
+    }
+
+    // Check the child expressions
+    let children = expression.children()
+    for (var i = 0; i < children.length; i++) {
+      let child = children[i]
+      this.checkVariables(child, context)
+    }
   }
 }
 
