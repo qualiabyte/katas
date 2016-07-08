@@ -105,15 +105,16 @@ class Operation extends Expression {
   }
 
   static precedence(op) {
-    if (op instanceof ExpressionStart) return 4
-    if (op instanceof ExpressionEnd)   return 4
-    if (op instanceof Multiplication)  return 3
-    if (op instanceof Division)        return 3
-    if (op instanceof Modulus)          return 3
-    if (op instanceof Addition)         return 2
-    if (op instanceof Subtraction)      return 2
-    if (op instanceof Assignment)      return 1
-    if (op instanceof Functional)      return 0
+    if (op instanceof ExpressionStart)     return 4
+    if (op instanceof ExpressionEnd)       return 4
+    if (op instanceof Multiplication)      return 3
+    if (op instanceof Division)            return 3
+    if (op instanceof Modulus)             return 3
+    if (op instanceof Addition)            return 2
+    if (op instanceof Subtraction)         return 2
+    if (op instanceof Assignment)          return 1
+    if (op instanceof FunctionalOperation) return 0
+    if (op instanceof Functional)          return 0
   }
 
   static compare(a, b) {
