@@ -179,6 +179,33 @@ class Functional extends Node {
 }
 
 class FunctionalOperation extends BinaryOperation {
+  constructor(token) {
+    super(token)
+    this.type = 'FunctionalOperation'
+    this.token = token
+    this.left = null
+    this.right = null
+  }
+  get value() {
+    return ""
+  }
+  evaluate(context) {
+    let declaration = this
+    let functional = this.left
+    let name = functional.name
+    let params = functional.params
+    let body = functional.body
+
+    // Check for conflicting variable
+    if (context.vars[name])
+      throw new Error(`Function declaration for '${name}' conflicts with existing variable`)
+
+    // Todo: Check for undefined variables
+    // console.log("Functional: ", functional)
+
+    // Add function to context
+    context.functions[name] = functional
+  }
 }
 
 class Assignment extends BinaryOperation {
@@ -335,7 +362,7 @@ class Parser {
       operation.right = body
       functional.body = body
 
-      this.stack.push(functional)
+      this.stack.push(operation)
     }
     else if (rule instanceof Assignment) {
       let value = this.stack.pop()
