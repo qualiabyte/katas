@@ -430,6 +430,13 @@ class Parser {
     this.stack = []
   }
 
+  parse(nodes) {
+    this.init(nodes)
+    let result = this.parseExpression(nodes)
+    this.checkValidity(result)
+    return result
+  }
+
   top() {
     return this.head(0)
   }
@@ -554,44 +561,6 @@ class Parser {
     }
   }
 
-  parse(nodes) {
-    this.init(nodes)
-    let result = this.parseExpression(nodes)
-    this.checkValidity(result)
-    return result
-  }
-
-  // Checks tree validity, throws if invalid.
-  checkValidity(tree) {
-
-    // Check function declarations for duplicate parameters
-    if (tree instanceof FunctionalOperation) {
-      let op = tree
-      let seen = {}
-      op.functional.params.forEach(
-        param => {
-          if (seen[param])
-            throw new Error(
-              `Duplicate parameter '${param}' for function '${op.functional.name}'.`
-            )
-          seen[param] = true
-        }
-      )
-    }
-
-    // Check children for function declarations
-    tree.children().forEach(
-      child => {
-        if (child instanceof FunctionalOperation) {
-          throw new Error(
-            `Illegal function declaration '${child.name}' within expression.`
-          )
-        }
-        this.checkValidity(child)
-      }
-    )
-  }
-
   parseExpression(nodes) {
     var iterations = 0
     while (this.pos < this.nodes.length || this.stack.length > 1) {
@@ -674,7 +643,7 @@ class Parser {
         }
       }
 
-      // Operation
+      // Binary Operation
       if (last instanceof BinaryOperation) {
         if (current instanceof Operation &&
            (current.compare(last) > 0 ||
@@ -688,6 +657,7 @@ class Parser {
         }
       }
 
+      // Expression Boundaries
       if ((current instanceof ExpressionStart) ||
           (current instanceof ExpressionEnd)) {
         this.shift()
@@ -711,7 +681,7 @@ class Parser {
         }
       }
 
-      if (current instanceof Numeric) {
+      if (current instanceof BinaryOperation) {
         this.shift()
         continue
       }
@@ -721,7 +691,7 @@ class Parser {
         continue
       }
 
-      if (current instanceof BinaryOperation) {
+      if (current instanceof Numeric) {
         this.shift()
         continue
       }
@@ -735,6 +705,37 @@ class Parser {
       : new Empty()
 
     return result
+  }
+
+  // Checks tree validity, throws if invalid.
+  checkValidity(tree) {
+
+    // Check function declarations for duplicate parameters
+    if (tree instanceof FunctionalOperation) {
+      let op = tree
+      let seen = {}
+      op.functional.params.forEach(
+        param => {
+          if (seen[param])
+            throw new Error(
+              `Duplicate parameter '${param}' for function '${op.functional.name}'.`
+            )
+          seen[param] = true
+        }
+      )
+    }
+
+    // Check children for function declarations
+    tree.children().forEach(
+      child => {
+        if (child instanceof FunctionalOperation) {
+          throw new Error(
+            `Illegal function declaration '${child.name}' within expression.`
+          )
+        }
+        this.checkValidity(child)
+      }
+    )
   }
 
   printStack(verbose) {
