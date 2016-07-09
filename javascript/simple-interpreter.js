@@ -268,10 +268,8 @@ class FunctionalOperation extends BinaryOperation {
     let params = functional.params
     let body = functional.body
 
-    console.log("Functional: ", functional)
-
     // Check for conflicting variable
-    if (context.vars[name])
+    if (context.vars.hasOwnProperty(name))
       throw new Error(`Function declaration for '${name}' conflicts with existing variable`)
 
     // Check for undefined variable references
