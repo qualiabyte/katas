@@ -132,38 +132,6 @@ class Variable extends Identifier {
   }
 }
 
-class Operation extends Expression {
-  constructor() {
-    super()
-    this.type = 'Operation'
-  }
-
-  compare(b) {
-    return Operation.compare(this, b)
-  }
-
-  precedence() {
-    return Operation.precedence(this)
-  }
-
-  static compare(a, b) {
-    return Operation.precedence(a) - Operation.precedence(b)
-  }
-
-  static precedence(op) {
-    if (op instanceof ExpressionStart)     return 4
-    if (op instanceof ExpressionEnd)       return 4
-    if (op instanceof Multiplication)      return 3
-    if (op instanceof Division)            return 3
-    if (op instanceof Modulus)             return 3
-    if (op instanceof Addition)            return 2
-    if (op instanceof Subtraction)         return 2
-    if (op instanceof Assignment)          return 1
-    if (op instanceof FunctionOperation)   return 0
-    if (op instanceof Function)            return 0
-  }
-}
-
 class ExpressionBoundary extends Node {}
 
 class ExpressionStart extends ExpressionBoundary {
@@ -201,6 +169,38 @@ class ExpressionGroup extends Expression {
   }
   children() {
     return [ this.inner ]
+  }
+}
+
+class Operation extends Expression {
+  constructor() {
+    super()
+    this.type = 'Operation'
+  }
+
+  compare(b) {
+    return Operation.compare(this, b)
+  }
+
+  precedence() {
+    return Operation.precedence(this)
+  }
+
+  static compare(a, b) {
+    return Operation.precedence(a) - Operation.precedence(b)
+  }
+
+  static precedence(op) {
+    if (op instanceof ExpressionStart)     return 4
+    if (op instanceof ExpressionEnd)       return 4
+    if (op instanceof Multiplication)      return 3
+    if (op instanceof Division)            return 3
+    if (op instanceof Modulus)             return 3
+    if (op instanceof Addition)            return 2
+    if (op instanceof Subtraction)         return 2
+    if (op instanceof Assignment)          return 1
+    if (op instanceof FunctionOperation)   return 0
+    if (op instanceof Function)            return 0
   }
 }
 
