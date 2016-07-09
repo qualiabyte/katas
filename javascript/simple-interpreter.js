@@ -44,6 +44,7 @@ class AST extends Node {
   constructor(root) {
     super()
     this.root = root
+    this.token = 'AST'
   }
 
   get value() {
@@ -544,7 +545,40 @@ class Parser {
 
   parse(nodes) {
     this.init(nodes)
-    return this.parseExpression(nodes)
+    let result = this.parseExpression(nodes)
+    this.checkValidity(result)
+    return result
+  }
+
+  // Checks tree validity, throws if invalid.
+  checkValidity(tree) {
+
+    // Check function declarations for duplicate parameters
+    if (tree instanceof FunctionalOperation) {
+      let op = tree
+      let seen = {}
+      op.functional.params.forEach(
+        param => {
+          if (seen[param])
+            throw new Error(
+              `Duplicate parameter '${param}' for function '${op.functional.name}'.`
+            )
+          seen[param] = true
+        }
+      )
+    }
+
+    // Check children for function declarations
+    tree.children().forEach(
+      child => {
+        if (child instanceof FunctionalOperation) {
+          throw new Error(
+            `Illegal function declaration '${child.name}' within expression.`
+          )
+        }
+        this.checkValidity(child)
+      }
+    )
   }
 
   parseExpression(nodes) {
@@ -600,6 +634,7 @@ class Parser {
           let end = this.stack.pop()
           let inner = this.stack.pop()
           let start = this.stack.pop()
+
           let group = new ExpressionGroup('G')
           group.inner = inner instanceof ExpressionGroup
             ? inner.inner
