@@ -26,11 +26,17 @@ class Node {
   }
 
   evaluate(context) {
-    return this.value
+    let result = this.value
+    this.logEvaluation(result)
+    return result
   }
 
   children() {
     return []
+  }
+
+  logEvaluation(value) {
+    console.log(`Evaluating: ${this.token} -> ${value}`)
   }
 }
 
@@ -45,7 +51,9 @@ class AST extends Node {
   }
 
   evaluate(context) {
-    return this.root.evaluate(context)
+    let result = this.root.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 
   children() {
@@ -94,8 +102,11 @@ class Variable extends Identifier {
     }
     else {
       let isDefined = context.vars.hasOwnProperty(this.name)
-      if (isDefined)
-        return context.vars[this.name]
+      if (isDefined) {
+        let result = context.vars[this.name]
+        this.logEvaluation(result)
+        return result
+      }
       else
         throw new Error("Invalid identifier. Reference to undefined variable: " + this.name)
     }
@@ -161,7 +172,9 @@ class ExpressionGroup extends Expression {
     return this.inner.value
   }
   evaluate(context) {
-    return this.inner.evaluate(context)
+    let result = this.inner.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
   children() {
     return [ this.inner ]
@@ -189,6 +202,43 @@ class Functional extends Node {
     this.name = null
     this.params = null
     this.body = null
+  }
+}
+
+class FunctionRef extends Identifier {
+  constructor(token, functional) {
+    super(token)
+    this.type = 'FunctionRef'
+    this.token = token
+    this.functional = functional
+    this.name = functional.name
+    this.params = functional.params
+    this.body = functional.body
+  }
+}
+
+class FunctionCall extends Operation {
+  constructor(token) {
+    super(token)
+    this.type = 'FunctionCall'
+    this.token = token
+    this.name = null
+    this.params = null
+    this.body = null
+    this.arguments = null
+  }
+  evaluate(context) {
+    let scope = {
+      vars: {}
+    }
+    for (let i = 0; i < this.params.length; i++) {
+      let key = this.params[i]
+      let value = this.arguments[i].evaluate(context)
+      scope.vars[key] = value
+    }
+    let result = this.body.evaluate(scope)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -224,6 +274,10 @@ class FunctionalOperation extends BinaryOperation {
 
     // Add function to context
     context.functions[name] = functional
+
+    let result = ""
+    this.logEvaluation(result)
+    return result
   }
 
   // Checks expression for undefined variable references.
@@ -287,7 +341,10 @@ class Assignment extends BinaryOperation {
       )
 
     context.vars[name] = value
-    return value
+
+    let result = value
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -296,7 +353,9 @@ class Addition extends BinaryOperation {
     return this.left.value + this.right.value
   }
   evaluate(context) {
-    return this.left.evaluate(context) + this.right.evaluate(context)
+    let result = this.left.evaluate(context) + this.right.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -305,7 +364,9 @@ class Subtraction extends BinaryOperation {
     return this.left.value - this.right.value
   }
   evaluate(context) {
-    return this.left.evaluate(context) - this.right.evaluate(context)
+    let result = this.left.evaluate(context) - this.right.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -314,7 +375,9 @@ class Multiplication extends BinaryOperation {
     return this.left.value * this.right.value
   }
   evaluate(context) {
-    return this.left.evaluate(context) * this.right.evaluate(context)
+    let result = this.left.evaluate(context) * this.right.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -323,7 +386,9 @@ class Division extends BinaryOperation {
     return this.left.value / this.right.value
   }
   evaluate(context) {
-    return this.left.evaluate(context) / this.right.evaluate(context)
+    let result = this.left.evaluate(context) / this.right.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -332,7 +397,9 @@ class Modulus extends BinaryOperation {
     return this.left.value % this.right.value
   }
   evaluate(context) {
-    return this.left.evaluate(context) % this.right.evaluate(context)
+    let result = this.left.evaluate(context) % this.right.evaluate(context)
+    this.logEvaluation(result)
+    return result
   }
 }
 
@@ -422,6 +489,27 @@ class Parser {
 
       this.stack.push(operation)
     }
+    else if (rule instanceof FunctionRef) {
+      let args = []
+      while (this.top() instanceof Expression &&
+           !(this.top() instanceof FunctionRef)) {
+        let argument = this.stack.pop()
+        args.push(argument)
+      }
+
+      let reference = this.stack.pop()
+      if (!(reference instanceof FunctionRef))
+        throw new Error("Expected function reference at: " + JSON.stringify(reference))
+
+      let call = new FunctionCall()
+      call.token = reference.name + '()'
+      call.name = reference.name
+      call.params = reference.params
+      call.body = reference.body
+      call.arguments = args
+
+      this.stack.push(call)
+    }
     else if (rule instanceof Assignment) {
       let value = this.stack.pop()
       let assignment = this.stack.pop()
@@ -459,8 +547,6 @@ class Parser {
     var iterations = 0
     while (this.pos < this.nodes.length || this.stack.length > 1) {
       this.printStack()
-      if (iterations++ > 20)
-        throw new Error("Exceeded limit for parser iterations")
       let current = this.nodes[this.pos]
       let next = this.nodes[this.pos + 1]
       let top = this.top()
@@ -471,6 +557,31 @@ class Parser {
       if (top instanceof Functional) {
         this.reduce(top)
         continue
+      }
+
+      // Function calls
+      if (!(current instanceof Operation)) {
+        let success = false
+
+        // Check stack for potential calls
+        for (let i = this.stack.length - 1; i >= 0; i--) {
+          let node = this.stack[i]
+          if (node instanceof FunctionRef) {
+            let functionRef = node
+            let params = functionRef.params
+            let items = this.stack.slice(i + 1)
+            let expressions = items.filter(item => item instanceof Expression)
+            let isMatch =
+              items.length == expressions.length &&
+              expressions.length == functionRef.params.length
+            if (isMatch) {
+              success = true
+              this.reduce(functionRef)
+              break
+            }
+          }
+        }
+        if (success) continue
       }
 
       // Expression Start
@@ -514,7 +625,7 @@ class Parser {
       }
 
       // Operation
-      if (last instanceof Operation) {
+      if (last instanceof BinaryOperation) {
         if (current instanceof Operation &&
             current.compare(last) >= 0) {
           this.shift()
@@ -537,6 +648,11 @@ class Parser {
         continue
       }
 
+      if (current instanceof FunctionRef) {
+        this.shift()
+        continue
+      }
+
       if (current instanceof Numeric) {
         this.shift()
         continue
@@ -551,6 +667,8 @@ class Parser {
         this.shift()
         continue
       }
+
+      throw new Error("No parsing rule for node: " + JSON.stringify(current))
     }
     this.printStack()
 
@@ -594,7 +712,8 @@ Interpreter.prototype.tokenize = function(program)
 }
 
 Interpreter.prototype.parse = function(tokens) {
-  var nodes = this.buildNodes(tokens)
+  var context = this
+  var nodes = this.buildNodes(tokens, context)
 
   console.log("Nodes: " + JSON.stringify(nodes, null, '>>'))
   var ast = this.buildAST(nodes)
@@ -607,7 +726,7 @@ Interpreter.prototype.buildAST = function(nodes) {
   return ast
 }
 
-Interpreter.prototype.buildNodes = function(tokens) {
+Interpreter.prototype.buildNodes = function(tokens, context) {
   var nodes = []
 
   // Identify node types
@@ -644,14 +763,18 @@ Interpreter.prototype.buildNodes = function(tokens) {
     else if (token.match(Grammar.FunctionalOperator)) {
       node = new FunctionalOperation(token)
     }
-    else if (token.match(Grammar.Identifier)) {
-      node = new Variable(token)
-    }
     else if (token.match(Grammar.ExpressionStart)) {
       node = new ExpressionStart(token)
     }
     else if (token.match(Grammar.ExpressionEnd)) {
       node = new ExpressionEnd(token)
+    }
+    else if (token.match(Grammar.Identifier)) {
+      let isFunction = context.functions.hasOwnProperty(token)
+      if (isFunction)
+        node = new FunctionRef(token, context.functions[token])
+      else
+        node = new Variable(token)
     }
 
     nodes.push(node)
