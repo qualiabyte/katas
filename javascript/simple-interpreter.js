@@ -689,8 +689,15 @@ class Parser {
       }
 
       if (current instanceof FunctionRef) {
-        this.shift()
-        continue
+        if (current.params.length == 0) {
+          this.shift()
+          this.reduce(this.top())
+          continue
+        }
+        else {
+          this.shift()
+          continue
+        }
       }
 
       if (current instanceof Numeric) {
