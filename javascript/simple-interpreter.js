@@ -123,6 +123,14 @@ class Operation extends Expression {
     return Operation.compare(this, b)
   }
 
+  precedence() {
+    return Operation.precedence(this)
+  }
+
+  static compare(a, b) {
+    return Operation.precedence(a) - Operation.precedence(b)
+  }
+
   static precedence(op) {
     if (op instanceof ExpressionStart)     return 4
     if (op instanceof ExpressionEnd)       return 4
@@ -134,10 +142,6 @@ class Operation extends Expression {
     if (op instanceof Assignment)          return 1
     if (op instanceof FunctionalOperation) return 0
     if (op instanceof Functional)          return 0
-  }
-
-  static compare(a, b) {
-    return Operation.precedence(a) - Operation.precedence(b)
   }
 }
 
@@ -205,7 +209,7 @@ class Functional extends Node {
   }
 }
 
-class FunctionRef extends Identifier {
+class FunctionRef extends Node {
   constructor(token, functional) {
     super(token)
     this.type = 'FunctionRef'
@@ -627,7 +631,8 @@ class Parser {
       // Operation
       if (last instanceof BinaryOperation) {
         if (current instanceof Operation &&
-            current.compare(last) >= 0) {
+           (current.compare(last) > 0 ||
+           (current.compare(last) == 0 && current.precedence() <= 1))) {
           this.shift()
           continue
         }
