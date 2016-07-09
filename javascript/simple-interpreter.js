@@ -1,3 +1,5 @@
+let Interpreter = (function() {
+
 'use strict'
 
 class Grammar {}
@@ -11,8 +13,8 @@ Grammar.MultiplicationOperator = /^\*$/
 Grammar.DivisionOperator = /^\/$/
 Grammar.ModulusOperator = /^%$/
 Grammar.AssignmentOperator = /^=$/
-Grammar.FunctionalKeyword = /^fn$/
-Grammar.FunctionalOperator = /^=>$/
+Grammar.FunctionKeyword = /^fn$/
+Grammar.FunctionOperator = /^=>$/
 Grammar.Identifier = /^[_a-zA-z][_a-zA-Z0-9]*$/
 Grammar.ExpressionStart = /\(/
 Grammar.ExpressionEnd = /\)/
@@ -154,8 +156,8 @@ class Operation extends Expression {
     if (op instanceof Addition)            return 2
     if (op instanceof Subtraction)         return 2
     if (op instanceof Assignment)          return 1
-    if (op instanceof FunctionalOperation) return 0
-    if (op instanceof Functional)          return 0
+    if (op instanceof FunctionOperation)   return 0
+    if (op instanceof Function)            return 0
   }
 }
 
@@ -212,10 +214,10 @@ class BinaryOperation extends Operation {
   }
 }
 
-class Functional extends Node {
+class Function extends Node {
   constructor(token) {
     super(token)
-    this.type = 'Functional'
+    this.type = 'Function'
     this.token = token
     this.name = null
     this.params = null
@@ -224,14 +226,14 @@ class Functional extends Node {
 }
 
 class FunctionRef extends Node {
-  constructor(token, functional) {
+  constructor(token, fn) {
     super(token)
     this.type = 'FunctionRef'
     this.token = token
-    this.functional = functional
-    this.name = functional.name
-    this.params = functional.params
-    this.body = functional.body
+    this.fn = fn
+    this.name = fn.name
+    this.params = fn.params
+    this.body = fn.body
   }
 }
 
@@ -260,26 +262,29 @@ class FunctionCall extends Operation {
   }
 }
 
-class FunctionalOperation extends BinaryOperation {
+class FunctionOperation extends BinaryOperation {
   constructor(token) {
     super(token)
-    this.type = 'FunctionalOperation'
+    this.type = 'FunctionOperation'
     this.token = token
     this.left = null
     this.right = null
   }
+
   get value() {
     return ""
   }
-  get functional() {
+
+  get fn() {
     return this.left
   }
+
   evaluate(context) {
     let declaration = this
-    let functional = this.left
-    let name = functional.name
-    let params = functional.params
-    let body = functional.body
+    let fn = this.left
+    let name = fn.name
+    let params = fn.params
+    let body = fn.body
 
     // Check for conflicting variable
     if (context.vars.hasOwnProperty(name))
@@ -289,7 +294,7 @@ class FunctionalOperation extends BinaryOperation {
     this.checkVariables()
 
     // Add function to context
-    context.functions[name] = functional
+    context.functions[name] = fn
 
     let result = ""
     this.logEvaluation(result)
@@ -299,12 +304,12 @@ class FunctionalOperation extends BinaryOperation {
   // Checks expression for undefined variable references.
   checkVariables(expression, context) {
     if (!expression)
-      expression = this.functional.body
+      expression = this.fn.body
 
     // Build context for params
     if (!context) {
       context = {}
-      this.functional.params.forEach(
+      this.fn.params.forEach(
         param => {
           context[param] = true
         }
@@ -318,7 +323,7 @@ class FunctionalOperation extends BinaryOperation {
       let isDefinedParam = context[name]
       if (!isDefinedParam)
         throw new Error(
-          `Function '${this.functional.name}' references undefined variable '${name}'.`
+          `Function '${this.fn.name}' references undefined variable '${name}'.`
         )
     }
 
@@ -467,15 +472,15 @@ class Parser {
   }
 
   reduce(rule) {
-    if (rule instanceof Functional) {
-      // Functional
-      let functional = this.top()
+    if (rule instanceof Function) {
+      // Function
+      let fn = this.top()
 
       // Identifier
       this.shift()
       this.printStack()
       let identifier = this.stack.pop()
-      functional.name = identifier.name
+      fn.name = identifier.name
 
       // Parameters
       let params = []
@@ -485,30 +490,30 @@ class Parser {
         let param = this.stack.pop()
         params.push(param)
       }
-      functional.params = params.map(p => p.name)
+      fn.params = params.map(p => p.name)
 
       // Operation
-      if (this.current() instanceof FunctionalOperation) {
+      if (this.current() instanceof FunctionOperation) {
         this.shift()
       }
       else {
-        throw new Error("Expected functional operator '=>' at: ", this.current)
+        throw new Error("Expected function operator '=>' at: ", this.current)
       }
     }
-    else if (rule instanceof FunctionalOperation) {
+    else if (rule instanceof FunctionOperation) {
       let body = this.stack.pop()
       let operation = this.stack.pop()
-      let functional = this.stack.pop()
+      let fn = this.stack.pop()
 
       if (!(body instanceof Expression))
-        throw new Error("Expected expression for functional body at: ", body)
+        throw new Error("Expected expression for function body at: ", body)
 
-      if (!(functional instanceof Functional))
-        throw new Error("Expected functional at: ", functional)
+      if (!(fn instanceof Function))
+        throw new Error("Expected function at: ", fn)
 
-      operation.left = functional
+      operation.left = fn
       operation.right = body
-      functional.body = body
+      fn.body = body
 
       this.stack.push(operation)
     }
@@ -571,8 +576,8 @@ class Parser {
       let last = this.last()
       let prev = this.prev()
 
-      // Functional Keyword
-      if (top instanceof Functional) {
+      // Function Keyword
+      if (top instanceof Function) {
         this.reduce(top)
         continue
       }
@@ -628,10 +633,10 @@ class Parser {
         }
       }
 
-      // Functional Operation
+      // Function Operation
       if (top instanceof Expression &&
-          last instanceof FunctionalOperation &&
-          prev instanceof Functional) {
+          last instanceof FunctionOperation &&
+          prev instanceof Function) {
         if (current instanceof BinaryOperation &&
             current.compare(last) >= 0) {
           this.shift()
@@ -664,7 +669,7 @@ class Parser {
         continue
       }
 
-      if (current instanceof Functional) {
+      if (current instanceof Function) {
         this.shift()
         continue
       }
@@ -711,14 +716,14 @@ class Parser {
   checkValidity(tree) {
 
     // Check function declarations for duplicate parameters
-    if (tree instanceof FunctionalOperation) {
+    if (tree instanceof FunctionOperation) {
       let op = tree
       let seen = {}
-      op.functional.params.forEach(
+      op.fn.params.forEach(
         param => {
           if (seen[param])
             throw new Error(
-              `Duplicate parameter '${param}' for function '${op.functional.name}'.`
+              `Duplicate parameter '${param}' for function '${op.fn.name}'.`
             )
           seen[param] = true
         }
@@ -728,7 +733,7 @@ class Parser {
     // Check children for function declarations
     tree.children().forEach(
       child => {
-        if (child instanceof FunctionalOperation) {
+        if (child instanceof FunctionOperation) {
           throw new Error(
             `Illegal function declaration '${child.name}' within expression.`
           )
@@ -815,11 +820,11 @@ class Interpreter {
       else if (token.match(Grammar.AssignmentOperator)) {
         node = new Assignment(token)
       }
-      else if (token.match(Grammar.FunctionalKeyword)) {
-        node = new Functional(token)
+      else if (token.match(Grammar.FunctionKeyword)) {
+        node = new Function(token)
       }
-      else if (token.match(Grammar.FunctionalOperator)) {
-        node = new FunctionalOperation(token)
+      else if (token.match(Grammar.FunctionOperator)) {
+        node = new FunctionOperation(token)
       }
       else if (token.match(Grammar.ExpressionStart)) {
         node = new ExpressionStart(token)
@@ -840,3 +845,7 @@ class Interpreter {
     return nodes
   }
 }
+
+return Interpreter
+
+})()
