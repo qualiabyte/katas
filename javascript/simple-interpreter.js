@@ -746,100 +746,96 @@ class Parser {
   }
 }
 
-function Interpreter()
-{
-  this.vars = {}
-  this.functions = {}
-  this.parser = new Parser()
-}
-
-Interpreter.prototype.input = function(expr)
-{
-  console.log("Input: " + expr)
-  // console.log("Interpreter: " + JSON.stringify(this, null, '__'))
-  var tokens = this.tokenize(expr)
-
-  console.log("Tokens: " + JSON.stringify(tokens, null, '__'))
-  var ast = this.parse(tokens)
-
-  console.log("AST: " + JSON.stringify(ast, null, ".."))
-  return ast.evaluate(this)
-}
-
-Interpreter.prototype.tokenize = function(program)
-{
-  if (program == "") return []
-  var regex = /\s*(=>|[-+*\/\%=\(\)]|[A-Za-z_][A-Za-z0-9_]*|[0-9]*\.?[0-9]+)\s*/g
-  return program.split(regex).filter(function (s) { return !s.match(/^\s*$/); })
-}
-
-Interpreter.prototype.parse = function(tokens) {
-  var context = this
-  var nodes = this.buildNodes(tokens, context)
-
-  console.log("Nodes: " + JSON.stringify(nodes, null, '>>'))
-  var ast = this.buildAST(nodes)
-  return ast
-}
-
-Interpreter.prototype.buildAST = function(nodes) {
-  var root = this.parser.parse(nodes)
-  var ast = new AST(root)
-  return ast
-}
-
-Interpreter.prototype.buildNodes = function(tokens, context) {
-  var nodes = []
-
-  // Identify node types
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i]
-    var node
-
-    // Numeric
-    if (token.match(Grammar.Numeric)) {
-      node = new Numeric(token)
-    }
-    // Binary Operations
-    else if (token.match(Grammar.AdditionOperator)) {
-      node = new Addition(token)
-    }
-    else if (token.match(Grammar.SubtractionOperator)) {
-      node = new Subtraction(token)
-    }
-    else if (token.match(Grammar.MultiplicationOperator)) {
-      node = new Multiplication(token)
-    }
-    else if (token.match(Grammar.DivisionOperator)) {
-      node = new Division(token)
-    }
-    else if (token.match(Grammar.ModulusOperator)) {
-      node = new Modulus(token)
-    }
-    else if (token.match(Grammar.AssignmentOperator)) {
-      node = new Assignment(token)
-    }
-    else if (token.match(Grammar.FunctionalKeyword)) {
-      node = new Functional(token)
-    }
-    else if (token.match(Grammar.FunctionalOperator)) {
-      node = new FunctionalOperation(token)
-    }
-    else if (token.match(Grammar.ExpressionStart)) {
-      node = new ExpressionStart(token)
-    }
-    else if (token.match(Grammar.ExpressionEnd)) {
-      node = new ExpressionEnd(token)
-    }
-    else if (token.match(Grammar.Identifier)) {
-      let isFunction = context.functions.hasOwnProperty(token)
-      if (isFunction)
-        node = new FunctionRef(token, context.functions[token])
-      else
-        node = new Variable(token)
-    }
-
-    nodes.push(node)
+class Interpreter {
+  constructor() {
+    this.vars = {}
+    this.functions = {}
+    this.parser = new Parser()
   }
-  return nodes
+
+  input(expr)
+  {
+    console.log("Input: " + expr)
+
+    let tokens = this.tokenize(expr)
+    let ast = this.parse(tokens)
+    let result = ast.evaluate(this)
+
+    return result
+  }
+
+  tokenize(program)
+  {
+    if (program == "") return []
+    let regex = /\s*(=>|[-+*\/\%=\(\)]|[A-Za-z_][A-Za-z0-9_]*|[0-9]*\.?[0-9]+)\s*/g
+    return program.split(regex).filter(function (s) { return !s.match(/^\s*$/); })
+  }
+
+  parse(tokens) {
+    let context = this
+    let nodes = this.buildNodes(tokens, context)
+    let ast = this.buildAST(nodes)
+
+    return ast
+  }
+
+  buildAST(nodes) {
+    let root = this.parser.parse(nodes)
+    let ast = new AST(root)
+    return ast
+  }
+
+  buildNodes(tokens, context) {
+    let nodes = []
+
+    // Identify node types
+    for (let i = 0; i < tokens.length; i++) {
+      let token = tokens[i]
+      let node
+
+      if (token.match(Grammar.Numeric)) {
+        node = new Numeric(token)
+      }
+      else if (token.match(Grammar.AdditionOperator)) {
+        node = new Addition(token)
+      }
+      else if (token.match(Grammar.SubtractionOperator)) {
+        node = new Subtraction(token)
+      }
+      else if (token.match(Grammar.MultiplicationOperator)) {
+        node = new Multiplication(token)
+      }
+      else if (token.match(Grammar.DivisionOperator)) {
+        node = new Division(token)
+      }
+      else if (token.match(Grammar.ModulusOperator)) {
+        node = new Modulus(token)
+      }
+      else if (token.match(Grammar.AssignmentOperator)) {
+        node = new Assignment(token)
+      }
+      else if (token.match(Grammar.FunctionalKeyword)) {
+        node = new Functional(token)
+      }
+      else if (token.match(Grammar.FunctionalOperator)) {
+        node = new FunctionalOperation(token)
+      }
+      else if (token.match(Grammar.ExpressionStart)) {
+        node = new ExpressionStart(token)
+      }
+      else if (token.match(Grammar.ExpressionEnd)) {
+        node = new ExpressionEnd(token)
+      }
+      else if (token.match(Grammar.Identifier)) {
+        let isFunction = context.functions.hasOwnProperty(token)
+        if (isFunction)
+          node = new FunctionRef(token, context.functions[token])
+        else
+          node = new Variable(token)
+      }
+
+      nodes.push(node)
+    }
+    return nodes
+  }
 }
