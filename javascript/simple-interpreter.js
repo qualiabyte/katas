@@ -123,8 +123,11 @@ class Variable extends Identifier {
         this.logEvaluation(result)
         return result
       }
-      else
-        throw new Error("Invalid identifier. Reference to undefined variable: " + this.name)
+      else {
+        throw new Error(
+          `Invalid reference to undefined variable ${this.name}`
+        )
+      }
     }
   }
 }
@@ -288,7 +291,8 @@ class FunctionOperation extends BinaryOperation {
 
     // Check for conflicting variable
     if (context.vars.hasOwnProperty(name))
-      throw new Error(`Function declaration for '${name}' conflicts with existing variable`)
+      throw new Error(
+        `Function declaration for '${name}' conflicts with existing variable`)
 
     // Check for undefined variable references
     this.checkVariables()
@@ -358,8 +362,7 @@ class Assignment extends BinaryOperation {
     let isConflicting = context.functions.hasOwnProperty(name)
     if (isConflicting)
       throw new Error(
-        `Variable assignment for '${name}' conflicts with existing function.`
-      )
+        `Variable assignment for '${name}' conflicts with existing function.`)
 
     context.vars[name] = value
 
@@ -497,7 +500,9 @@ class Parser {
         this.shift()
       }
       else {
-        throw new Error("Expected function operator '=>' at: ", this.current)
+        throw new Error(
+          `Expected function operator '=>' at: ` + JSON.stringify(this.current)
+        )
       }
     }
     else if (rule instanceof FunctionOperation) {
@@ -506,7 +511,8 @@ class Parser {
       let fn = this.stack.pop()
 
       if (!(body instanceof Expression))
-        throw new Error("Expected expression for function body at: ", body)
+        throw new Error(
+          "Expected expression for function body at: " + JSON.stringify(body))
 
       if (!(fn instanceof Function))
         throw new Error("Expected function at: ", fn)
@@ -544,7 +550,7 @@ class Parser {
       let variable = this.stack.pop()
 
       if (! variable instanceof Variable)
-        throw new Error("Assignment to non-variable: ", variable)
+        throw new Error("Assignment to non-variable: " + JSON.stringify(variable))
 
       assignment.left = variable
       assignment.right = value
@@ -629,7 +635,7 @@ class Parser {
           continue
         }
         else {
-          throw new Error("Expected expression start '(' at: ", prev)
+          throw new Error("Expected expression start '(' at: " + JSON.stringify(prev))
         }
       }
 
