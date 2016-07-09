@@ -43,7 +43,7 @@ class Node {
 class AST extends Node {
   constructor(root) {
     super()
-    this.root = root
+    this.root = root || new Empty()
     this.token = 'AST'
   }
 
@@ -59,6 +59,19 @@ class AST extends Node {
 
   children() {
     return [ this.root ]
+  }
+}
+
+class Empty extends Node {
+  constructor() {
+    super()
+    this.token = 'Empty'
+  }
+  get value() {
+    return ""
+  }
+  children() {
+    return []
   }
 }
 
@@ -717,7 +730,11 @@ class Parser {
     }
     this.printStack()
 
-    return this.top()
+    let result = this.stack.length
+      ? this.top()
+      : new Empty()
+
+    return result
   }
 
   printStack(verbose) {
