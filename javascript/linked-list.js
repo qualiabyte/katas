@@ -1,13 +1,73 @@
 'use strict'
 
+/**
+ * The Node class represents an element in a doubly linked list.
+ *
+ * # Examples
+ *
+ *     // Create nodes with given values
+ *     let foo = new Node('a')
+ *     let bar = new Node('c')
+ *
+ *     // Create linked node
+ *     let node = new Node('b', foo, bar)
+ *
+ *     // Link other nodes
+ *     foo.next = node
+ *     bar.prev = node
+ *
+ *     // Test this node
+ *     assert.equal(node.value, 'b', "The node value is 'b'")
+ *     assert.equal(node.prev, foo, "The previous node is foo")
+ *     assert.equal(node.next, bar, "The next node is bar")
+ *
+ * @member {Node} next The next linked node.
+ * @member {Node} prev The previous linked node.
+ * @member {object} value The value of this node.
+ */
 class Node {
-  constructor(value, next, prev) {
+  constructor(value, prev, next) {
     this.value = value
     this.next = next
     this.prev = prev
   }
 }
 
+/**
+ * The List class implements a doubly linked list.
+ *
+ * # Examples
+ *
+ *     // Create a new list
+ *     let list = new List()
+ *
+ *     // Add some values
+ *     list.add('a')
+ *     list.add('b')
+ *     list.add('c')
+ *
+ *     // Remove one node by value
+ *     list.remove('b')
+ *
+ *     // Get the head and tail
+ *     let head = list.head
+ *     let tail = list.tail
+ *
+ *     // Check the list
+ *     assert.equal(head.value, 'a', "The head value is 'a'")
+ *     assert.equal(tail.value, 'b', "The tail value is 'c'")
+ *     assert.equal(list.length, 2, "The list length is 2")
+ *
+ * # Analysis
+ *
+ *     list:        O(N) space, to store all elements
+ *     list.add:    O(1) time, to append element to the end
+ *     list.remove: O(0.5N) time on average, O(N) worst case, O(1) best case
+ *
+ * @member {Node} head The first element in the list.
+ * @member {Node} tail The last element in the list.
+ * @member {number} length The number of list elements.
+ */
 class List {
   constructor() {
     this.head = null
