@@ -132,6 +132,13 @@ class Tests
   public static void main(String[] args)
   {
     Tests tests = new Tests();
-    tests.run();
+    try
+    {
+      tests.run();
+    }
+    catch (Error e)
+    {
+      System.exit(1);
+    }
   }
 }
