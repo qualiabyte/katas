@@ -4,25 +4,18 @@ public class KataTests extends Tests
 {
   public KataTests() {}
 
-  public void run()
+  public static void run()
   {
     log("Testing Katas");
-    Tests stackTests = new StackTests();
-    stackTests.run();
+    StackTests.run();
     log("Passed Kata Tests!");
-  }
-
-  public void log(String message)
-  {
-    System.out.println(message);
   }
 
   public static void main(String[] args)
   {
-    Tests tests = new KataTests();
     try
     {
-      tests.run();
+      KataTests.run();
     }
     catch (Error e)
     {

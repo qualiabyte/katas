@@ -42,12 +42,12 @@ class StackTests extends Tests
 {
   StackTests() {}
 
-  public void run()
+  public static void run()
   {
     testStack();
   }
 
-  public void testStack()
+  public static void testStack()
   {
     log("Testing Stack class");
     testPush();
@@ -57,12 +57,7 @@ class StackTests extends Tests
     log("Passed Stack tests!");
   }
 
-  public void log(String message)
-  {
-    System.out.println(message);
-  }
-
-  public Stack<String> setup()
+  public static Stack<String> setup()
   {
     Stack<String> stack = new Stack(256);
 
@@ -74,7 +69,7 @@ class StackTests extends Tests
     return stack;
   }
 
-  public void testPush()
+  public static void testPush()
   {
     log("Testing stack.push()");
     Stack<String> stack = new Stack(256);
@@ -87,7 +82,7 @@ class StackTests extends Tests
       throw new Error("Stack.push() should add values to the stack");
   }
 
-  public void testProperties()
+  public static void testProperties()
   {
     log("Testing stack properties");
     Stack<String> stack = setup();
@@ -99,7 +94,7 @@ class StackTests extends Tests
       throw new Error("Stack maximum should match constructor value");
   }
 
-  public void testTop()
+  public static void testTop()
   {
     log("Testing stack.top()");
     Stack<String> stack = setup();
@@ -108,7 +103,7 @@ class StackTests extends Tests
       throw new Error("Stack top should equal most recent value");
   }
 
-  public void testPop()
+  public static void testPop()
   {
     log("Testing stack.pop()");
     Stack<String> stack = setup();
@@ -129,10 +124,9 @@ class StackTests extends Tests
 
   public static void main(String[] args)
   {
-    Tests tests = new StackTests();
     try
     {
-      tests.run();
+      StackTests.run();
     }
     catch (Error e)
     {
