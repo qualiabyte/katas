@@ -1,6 +1,6 @@
 package io.github.qualiabyte.katas;
 
-class Stack<T>
+public class Stack<T>
 {
   Stack(int maxHeight)
   {
@@ -38,15 +38,13 @@ class Stack<T>
   int max;
 }
 
-class Tests
+class StackTests extends Tests
 {
-  Tests() {}
+  StackTests() {}
 
   public void run()
   {
-    log("Testing Katas");
     testStack();
-    log("Passed Kata Tests!");
   }
 
   public void testStack()
@@ -131,7 +129,7 @@ class Tests
 
   public static void main(String[] args)
   {
-    Tests tests = new Tests();
+    Tests tests = new StackTests();
     try
     {
       tests.run();
