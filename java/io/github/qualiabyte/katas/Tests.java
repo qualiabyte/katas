@@ -2,8 +2,6 @@ package io.github.qualiabyte.katas;
 
 public class Tests
 {
-  public Tests() {}
-
   public static void run()
   {
     KataTests.run();

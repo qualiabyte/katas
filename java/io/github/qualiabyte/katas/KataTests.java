@@ -2,8 +2,6 @@ package io.github.qualiabyte.katas;
 
 public class KataTests extends Tests
 {
-  public KataTests() {}
-
   public static void run()
   {
     log("Testing Katas");

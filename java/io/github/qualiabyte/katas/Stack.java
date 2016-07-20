@@ -40,8 +40,6 @@ public class Stack<T>
 
 class StackTests extends Tests
 {
-  StackTests() {}
-
   public static void run()
   {
     testStack();
