@@ -33,16 +33,49 @@ public class BinaryTree<K extends Comparable,V>
     }
     else
     {
-      // Replace existing node
-      current = replace(node, current);
+      // Update existing node
+      current.key = node.key;
+      current.value = node.value;
     }
     return current;
   }
 
-  public Node<K,V> replace(Node<K,V> node, Node<K,V> current)
+  public Node<K,V> remove(K key)
   {
-    node.left = current.left;
-    node.right = current.right;
+    return remove(key, root);
+  }
+
+  public Node<K,V> remove(K key, Node<K,V> node)
+  {
+    if (node == null)
+    {
+      return null;
+    }
+    else if (key.compareTo(node.key) < 0)
+    {
+      node.left = remove(key, node.left);
+    }
+    else if (key.compareTo(node.key) > 0)
+    {
+      node.right = remove(key, node.right);
+    }
+    else if (node.left != null && node.right != null)
+    {
+      Node<K,V> smallest = findMin(node.right);
+
+      node.key = smallest.key;
+      node.value = smallest.value;
+
+      node.right = remove(smallest.key, node.right);
+    }
+    else if (node.left != null)
+    {
+      node = node.left;
+    }
+    else if (node.right != null)
+    {
+      node = node.right;
+    }
     return node;
   }
 
@@ -71,9 +104,35 @@ public class BinaryTree<K extends Comparable,V>
     }
   }
 
+  public Node<K,V> findMin()
+  {
+    return findMin(root);
+  }
+
+  public Node<K,V> findMin(Node<K,V> node)
+  {
+    if (node.left != null)
+      return findMin(node.left);
+    else
+      return node;
+  }
+
+  public Node<K,V> findMax()
+  {
+    return findMax(root);
+  }
+
+  public Node<K,V> findMax(Node<K,V> node)
+  {
+    if (node.right!= null)
+      return findMax(node.right);
+    else
+      return node;
+  }
+
   public String toString()
   {
-    String result = "BinaryTree:\n";
+    String result = "BinaryTree:";
     if (root != null)
     {
       result += root.toString();
@@ -150,12 +209,14 @@ class BinaryTreeTests extends Tests
 
   public static void testBinaryTree()
   {
-    testAddNode();
+    testInsert();
+    testFind();
+    testRemove();
   }
 
-  public static void testAddNode()
+  public static void testInsert()
   {
-    log("Testing BinaryTree#add(key, value)");
+    log("Testing BinaryTree#insert(key, value)");
     BinaryTree<Integer,String> tree = new BinaryTree();
 
     tree.insert(1, "Alice");
@@ -180,6 +241,57 @@ class BinaryTreeTests extends Tests
 
     if (tree.find(5).value != "Eve")
       throw new Error("Tree.add() should add fifth node");
+  }
+
+  public static BinaryTree<Integer, String> setup()
+  {
+    BinaryTree<Integer,String> tree = new BinaryTree();
+
+    tree.insert(1, "Alice");
+    tree.insert(2, "Bob");
+    tree.insert(3, "Carol");
+    tree.insert(4, "David");
+    tree.insert(5, "Eve");
+
+    return tree;
+  }
+
+  public static void testFind()
+  {
+    BinaryTree<Integer, String> tree = setup();
+
+    log("Testing BinaryTree#find(key)");
+    if (tree.find(3).value != "Carol")
+      throw new Error("Tree.find() should find node with given key");
+
+    log("Testing BinaryTree#findMin()");
+    if (tree.findMin().value != "Alice")
+      throw new Error("Tree.FindMin() should find node with smallest key");
+
+    log("Testing BinaryTree#findMin()");
+    if (tree.findMax().value != "Eve")
+      throw new Error("Tree.findMax() should find node with largest key");
+  }
+
+  public static void testRemove()
+  {
+    log("Testing BinaryTree#remove(key)");
+    BinaryTree<Integer, String> tree = setup();
+
+    Node<Integer,String> before = tree.find(3);
+    Node<Integer,String> root = tree.remove(3);
+    Node<Integer,String> after = tree.find(3);
+
+    log(tree.toString());
+
+    if (before == null)
+      throw new Error("Node should exist in tree before removal");
+
+    if (after != null)
+      throw new Error("Tree.remove() should remove a node with given key");
+
+    if (root.value != tree.root.value)
+      throw new Error("Tree.remove() should return the root node");
   }
 
   public static void main(String[] args)
