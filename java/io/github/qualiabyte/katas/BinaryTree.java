@@ -7,71 +7,49 @@ public class BinaryTree<K extends Comparable,V>
     root = null;
   }
 
-  public Node<K,V> add(K key, V value)
+  public Node<K,V> insert(K key, V value)
   {
     Node<K,V> node = new Node(key, value);
-    if (root == null)
-    {
-      root = node;
-    }
-    else
-    {
-      add(node, root);
-    }
+    root = insert(node, root);
     return node;
   }
 
-  public Node<K,V> add(Node<K,V> node, Node<K,V> start)
+  public Node<K,V> insert(Node<K,V> node, Node<K,V> start)
   {
-    Node<K,V> parent = start;
+    return insert(node, start, null);
+  }
 
-    if (node.key.compareTo(parent.key) < 0)
+  public Node<K,V> insert(Node<K,V> node, Node<K,V> current, Node<K,V> parent)
+  {
+    if (current == null)
     {
-      if (parent.left == null)
-      {
-        // Create left leaf
-        parent.left = node;
-        node.parent = parent;
-      }
-      else
-      {
-        // Add to left branch
-        add(node, parent.left);
-      }
+      // Leaf node
+      current = node;
+      current.parent = parent;
     }
-    else if (node.key.compareTo(parent.key) > 0)
+    else if (node.key.compareTo(current.key) < 0)
     {
-      if (parent.right == null)
-      {
-        // Create right leaf
-        parent.right = node;
-        node.parent = parent;
-      }
-      else
-      {
-        // Add to right branch
-        add(node, parent.right);
-      }
+      // Insert left branch
+      current.left = insert(node, current.left, current);
+    }
+    else if (node.key.compareTo(current.key) > 0)
+    {
+      // Insert right branch
+      current.right = insert(node, current.right, current);
     }
     else
     {
-      // Replace node to update key
-      node.left = parent.left;
-      node.right = parent.right;
-      node.parent = parent.parent;
-
-      // Update grandparent
-      Node<K,V> grandparent = parent.parent;
-      if (grandparent.left == parent)
-      {
-        grandparent.left = node;
-      }
-      else
-      {
-        grandparent.right = node;
-      }
+      // Replace existing node
+      current = replace(node, current);
     }
+    return current;
+  }
 
+  public Node<K,V> replace(Node<K,V> node, Node<K,V> current)
+  {
+    node.parent = current.parent;
+    node.left = current.left;
+    node.right = current.right;
     return node;
   }
 
@@ -82,26 +60,22 @@ public class BinaryTree<K extends Comparable,V>
 
   public Node<K,V> find(K key, Node<K,V> start)
   {
-    Node<K,V> node = null;
-
     if (start == null)
     {
-      node = null;
+      return null;
     }
     else if (key.compareTo(start.key) < 0)
     {
-      node = find(key, start.left);
+      return find(key, start.left);
     }
     else if (key.compareTo(start.key) > 0)
     {
-      node = find(key, start.right);
+      return find(key, start.right);
     }
-    else if (key.compareTo(start.key) == 0)
+    else
     {
-      node = start;
+      return start;
     }
-
-    return node;
   }
 
   public String toString()
@@ -193,11 +167,11 @@ class BinaryTreeTests extends Tests
     log("Testing BinaryTree#add(key, value)");
     BinaryTree<Integer,String> tree = new BinaryTree();
 
-    tree.add(1, "Alice");
-    tree.add(2, "Bob");
-    tree.add(3, "Carol");
-    tree.add(4, "David");
-    tree.add(5, "Eve");
+    tree.insert(1, "Alice");
+    tree.insert(2, "Bob");
+    tree.insert(3, "Carol");
+    tree.insert(4, "David");
+    tree.insert(5, "Eve");
 
     log(tree.toString());
 
