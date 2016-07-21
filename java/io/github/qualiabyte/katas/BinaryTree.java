@@ -14,28 +14,22 @@ public class BinaryTree<K extends Comparable,V>
     return node;
   }
 
-  public Node<K,V> insert(Node<K,V> node, Node<K,V> start)
-  {
-    return insert(node, start, null);
-  }
-
-  public Node<K,V> insert(Node<K,V> node, Node<K,V> current, Node<K,V> parent)
+  public Node<K,V> insert(Node<K,V> node, Node<K,V> current)
   {
     if (current == null)
     {
       // Leaf node
       current = node;
-      current.parent = parent;
     }
     else if (node.key.compareTo(current.key) < 0)
     {
       // Insert left branch
-      current.left = insert(node, current.left, current);
+      current.left = insert(node, current.left);
     }
     else if (node.key.compareTo(current.key) > 0)
     {
       // Insert right branch
-      current.right = insert(node, current.right, current);
+      current.right = insert(node, current.right);
     }
     else
     {
@@ -47,7 +41,6 @@ public class BinaryTree<K extends Comparable,V>
 
   public Node<K,V> replace(Node<K,V> node, Node<K,V> current)
   {
-    node.parent = current.parent;
     node.left = current.left;
     node.right = current.right;
     return node;
@@ -104,14 +97,13 @@ class Node<K,V>
 
   public Node(K key, V value)
   {
-    this(key, value, null, null, null);
+    this(key, value, null, null);
   }
 
-  public Node(K key, V value, Node parent, Node left, Node right)
+  public Node(K key, V value, Node left, Node right)
   {
     this.key = key;
     this.value = value;
-    this.parent = parent;
     this.left = left;
     this.right = right;
   }
@@ -143,7 +135,6 @@ class Node<K,V>
 
   public K key;
   public V value;
-  public Node<K,V> parent;
   public Node<K,V> left;
   public Node<K,V> right;
 }
