@@ -61,11 +61,9 @@ public class BinaryTree<K extends Comparable,V>
   private Node<K,V> replaceWithRightMin(Node<K,V> root)
   {
       Node<K,V> smallest = findMin(root.right);
-
       root.key = smallest.key;
       root.value = smallest.value;
       root.right = remove(smallest.key, root.right);
-
       return root;
   }
 
@@ -74,24 +72,19 @@ public class BinaryTree<K extends Comparable,V>
     return find(key, root);
   }
 
-  public Node<K,V> find(K key, Node<K,V> start)
+  public Node<K,V> find(K key, Node<K,V> root)
   {
-    if (start == null)
-    {
+    if (root == null)
       return null;
-    }
-    else if (key.compareTo(start.key) < 0)
-    {
-      return find(key, start.left);
-    }
-    else if (key.compareTo(start.key) > 0)
-    {
-      return find(key, start.right);
-    }
+
+    else if (key.compareTo(root.key) < 0)
+      return find(key, root.left);
+
+    else if (key.compareTo(root.key) > 0)
+      return find(key, root.right);
+
     else
-    {
-      return start;
-    }
+      return root;
   }
 
   public Node<K,V> findMin()
@@ -123,14 +116,12 @@ public class BinaryTree<K extends Comparable,V>
   public String toString()
   {
     String result = "BinaryTree:";
+
     if (root != null)
-    {
       result += root.toString();
-    }
     else
-    {
       result += "Null";
-    }
+
     return result;
   }
 
