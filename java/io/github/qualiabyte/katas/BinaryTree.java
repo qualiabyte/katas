@@ -9,35 +9,25 @@ public class BinaryTree<K extends Comparable,V>
 
   public Node<K,V> insert(K key, V value)
   {
-    Node<K,V> node = new Node(key, value);
-    root = insert(node, root);
-    return node;
+    root = insert(key, value, root);
+    return root;
   }
 
-  public Node<K,V> insert(Node<K,V> node, Node<K,V> current)
+  public Node<K,V> insert(K key, V value, Node<K,V> root)
   {
-    if (current == null)
-    {
-      // Leaf node
-      current = node;
-    }
-    else if (node.key.compareTo(current.key) < 0)
-    {
-      // Insert left branch
-      current.left = insert(node, current.left);
-    }
-    else if (node.key.compareTo(current.key) > 0)
-    {
-      // Insert right branch
-      current.right = insert(node, current.right);
-    }
-    else
-    {
-      // Update existing node
-      current.key = node.key;
-      current.value = node.value;
-    }
-    return current;
+    if (root == null)
+      root = new Node<K,V>(key, value);
+
+    else if (key.compareTo(root.key) == 0)
+      root.value = value;
+
+    else if (key.compareTo(root.key) < 0)
+      root.left = insert(key, value, root.left);
+
+    else if (key.compareTo(root.key) > 0)
+      root.right = insert(key, value, root.right);
+
+    return root;
   }
 
   public Node<K,V> remove(K key)
