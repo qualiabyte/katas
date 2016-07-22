@@ -13,78 +13,9 @@ public class BinaryTree<K extends Comparable,V>
     return root;
   }
 
-  public Node<K,V> insert(K key, V value, Node<K,V> root)
-  {
-    if (root == null)
-      root = new Node<K,V>(key, value);
-
-    else if (key.compareTo(root.key) == 0)
-      root.value = value;
-
-    else if (key.compareTo(root.key) < 0)
-      root.left = insert(key, value, root.left);
-
-    else if (key.compareTo(root.key) > 0)
-      root.right = insert(key, value, root.right);
-
-    return root;
-  }
-
-  public Node<K,V> remove(K key)
-  {
-    return remove(key, root);
-  }
-
-  public Node<K,V> remove(K key, Node<K,V> root)
-  {
-    if (root == null)
-      root = null;
-
-    else if (key.compareTo(root.key) < 0)
-      root.left = remove(key, root.left);
-
-    else if (key.compareTo(root.key) > 0)
-      root.right = remove(key, root.right);
-
-    else if (root.left != null && root.right != null)
-      root = replaceWithRightMin(root);
-
-    else if (root.left != null)
-      root = root.left;
-
-    else if (root.right != null)
-      root = root.right;
-
-    return root;
-  }
-
-  private Node<K,V> replaceWithRightMin(Node<K,V> root)
-  {
-      Node<K,V> smallest = findMin(root.right);
-      root.key = smallest.key;
-      root.value = smallest.value;
-      root.right = remove(smallest.key, root.right);
-      return root;
-  }
-
   public Node<K,V> find(K key)
   {
     return find(key, root);
-  }
-
-  public Node<K,V> find(K key, Node<K,V> root)
-  {
-    if (root == null)
-      return null;
-
-    else if (key.compareTo(root.key) < 0)
-      return find(key, root.left);
-
-    else if (key.compareTo(root.key) > 0)
-      return find(key, root.right);
-
-    else
-      return root;
   }
 
   public Node<K,V> findMin()
@@ -92,35 +23,133 @@ public class BinaryTree<K extends Comparable,V>
     return findMin(root);
   }
 
-  public Node<K,V> findMin(Node<K,V> node)
-  {
-    if (node.left != null)
-      return findMin(node.left);
-    else
-      return node;
-  }
-
   public Node<K,V> findMax()
   {
     return findMax(root);
   }
 
-  public Node<K,V> findMax(Node<K,V> node)
+  public Node<K,V> remove(K key)
   {
-    if (node.right!= null)
-      return findMax(node.right);
+    return remove(key, root);
+  }
+
+  public Node<K,V> insert(K key, V value, Node<K,V> root)
+  {
+    if (root == null)
+    {
+      root = new Node<K,V>(key, value);
+    }
+    else if (key.compareTo(root.key) == 0)
+    {
+      root.value = value;
+    }
+    else if (key.compareTo(root.key) < 0)
+    {
+      root.left = insert(key, value, root.left);
+    }
+    else if (key.compareTo(root.key) > 0)
+    {
+      root.right = insert(key, value, root.right);
+    }
+    return root;
+  }
+
+  public Node<K,V> find(K key, Node<K,V> root)
+  {
+    if (root == null)
+    {
+      return null;
+    }
+    else if (key.compareTo(root.key) < 0)
+    {
+      return find(key, root.left);
+    }
+    else if (key.compareTo(root.key) > 0)
+    {
+      return find(key, root.right);
+    }
     else
-      return node;
+    {
+      return root;
+    }
+  }
+
+  public Node<K,V> findMin(Node<K,V> root)
+  {
+    if (root.left != null)
+    {
+      return findMin(root.left);
+    }
+    else
+    {
+      return root;
+    }
+  }
+
+  public Node<K,V> findMax(Node<K,V> root)
+  {
+    if (root.right!= null)
+    {
+      return findMax(root.right);
+    }
+    else
+    {
+      return root;
+    }
+  }
+
+  public Node<K,V> remove(K key, Node<K,V> root)
+  {
+    if (root == null)
+    {
+      root = null;
+    }
+    else if (key.compareTo(root.key) < 0)
+    {
+      root.left = remove(key, root.left);
+    }
+    else if (key.compareTo(root.key) > 0)
+    {
+      root.right = remove(key, root.right);
+    }
+    else if (root.left != null && root.right != null)
+    {
+      root = replaceWithRightMin(root);
+    }
+    else if (root.left != null)
+    {
+      root = root.left;
+    }
+    else if (root.right != null)
+    {
+      root = root.right;
+    }
+    return root;
+  }
+
+  private Node<K,V> replaceWithRightMin(Node<K,V> root)
+  {
+      Node<K,V> smallest = findMin(root.right);
+
+      root.key = smallest.key;
+      root.value = smallest.value;
+      root.right = remove(smallest.key, root.right);
+
+      return root;
   }
 
   public String toString()
   {
-    String result = "BinaryTree:";
+    String result = "BinaryTree: ";
 
     if (root != null)
+    {
       result += root.toString();
+    }
     else
+    {
       result += "Null";
+    }
 
     return result;
   }
