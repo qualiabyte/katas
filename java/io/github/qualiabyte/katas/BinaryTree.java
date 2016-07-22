@@ -35,38 +35,38 @@ public class BinaryTree<K extends Comparable,V>
     return remove(key, root);
   }
 
-  public Node<K,V> remove(K key, Node<K,V> node)
+  public Node<K,V> remove(K key, Node<K,V> root)
   {
-    if (node == null)
-    {
-      return null;
-    }
-    else if (key.compareTo(node.key) < 0)
-    {
-      node.left = remove(key, node.left);
-    }
-    else if (key.compareTo(node.key) > 0)
-    {
-      node.right = remove(key, node.right);
-    }
-    else if (node.left != null && node.right != null)
-    {
-      Node<K,V> smallest = findMin(node.right);
+    if (root == null)
+      root = null;
 
-      node.key = smallest.key;
-      node.value = smallest.value;
+    else if (key.compareTo(root.key) < 0)
+      root.left = remove(key, root.left);
 
-      node.right = remove(smallest.key, node.right);
-    }
-    else if (node.left != null)
-    {
-      node = node.left;
-    }
-    else if (node.right != null)
-    {
-      node = node.right;
-    }
-    return node;
+    else if (key.compareTo(root.key) > 0)
+      root.right = remove(key, root.right);
+
+    else if (root.left != null && root.right != null)
+      root = replaceWithRightMin(root);
+
+    else if (root.left != null)
+      root = root.left;
+
+    else if (root.right != null)
+      root = root.right;
+
+    return root;
+  }
+
+  private Node<K,V> replaceWithRightMin(Node<K,V> root)
+  {
+      Node<K,V> smallest = findMin(root.right);
+
+      root.key = smallest.key;
+      root.value = smallest.value;
+      root.right = remove(smallest.key, root.right);
+
+      return root;
   }
 
   public Node<K,V> find(K key)
