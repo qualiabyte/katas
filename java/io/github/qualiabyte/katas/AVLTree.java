@@ -99,30 +99,30 @@ class AVLNode
 
   public AVLNode findMin()
   {
-    AVLNode min = null;
-    AVLNode leftMin = null;
-    if (left != null)
-      leftMin = left.findMin();
+    AVLNode current = this;
+    AVLNode min = !deleted ? this : null;
 
-    if (leftMin != null)
-      min = leftMin;
-    else if (!deleted)
-      min = this;
+    while (current.left != null)
+    {
+      current = current.left;
+      if (!current.deleted)
+        min = current;
+    }
 
     return min;
   }
 
   public AVLNode findMax()
   {
-    AVLNode max = null;
-    AVLNode rightMax = null;
-    if (right != null)
-      rightMax = right.findMax();
+    AVLNode current = this;
+    AVLNode max = !deleted ? this : null;
 
-    if (rightMax != null)
-      max = rightMax;
-    else if (!deleted)
-      max = this;
+    while (current.right != null)
+    {
+      current = current.right;
+      if (!current.deleted)
+        max = current;
+    }
 
     return max;
   }
@@ -331,11 +331,11 @@ class AVLTreeTests extends Tests
     if (tree.find(3).value != "Carol")
       throw new Error("Tree.find() should find node with given key");
 
-    log("Testing AVLTree#findMin()");
+    log("Testing AVLTree#findMin(key)");
     if (tree.findMin().value != "Alice")
       throw new Error("Tree.FindMin() should find node with smallest key");
 
-    log("Testing AVLTree#findMin()");
+    log("Testing AVLTree#findMax(key)");
     if (tree.findMax().value != "Eve")
       throw new Error("Tree.findMax() should find node with largest key");
   }
