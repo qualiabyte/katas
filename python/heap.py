@@ -3,6 +3,15 @@
 import pprint
 
 pp = pprint.PrettyPrinter(indent=2)
+DEBUG = False
+
+
+def log(message, *argv):
+    if DEBUG:
+        if argv:
+            print message, argv
+        else:
+            print message
 
 
 class Heap:
@@ -12,7 +21,8 @@ class Heap:
 
 
     def insert(self, priority, value):
-        print "\nINSERT"
+        log("\nINSERT")
+
         node = HeapNode(priority, value)
         if self.root is None:
             self.root = node
@@ -21,7 +31,7 @@ class Heap:
 
 
     def percolateDown(self, root, node):
-        print("PERCOLATE DOWN {}, {}".format(root.priority, node.priority))
+        log("PERCOLATE DOWN {}, {}".format(root.priority, node.priority))
 
         # Swap with root if node is smaller
         if node and root and node.priority < root.priority:
@@ -81,8 +91,8 @@ class Heap:
 
 
     def removeMin(self):
-        print "\nREMOVE MIN"
-        print self
+        log("\nREMOVE MIN")
+        log(self)
 
         # Save the smallest node
         min = self.root
@@ -98,7 +108,7 @@ class Heap:
         # Percolate the hole down
         self.root = self.percolateDown(self.root, hole)
 
-        print "MIN: %s" % min.value
+        log("MIN: %s" % min.value)
         return min
 
 
@@ -150,16 +160,16 @@ class HeapTest:
         heap.insert(5, "Eve")
         heap.insert(1, "Alice")
         heap.insert(3, "Carol")
+        log(heap)
 
-        print heap
         actual = []
 
         for i in range(5):
             smallest = heap.removeMin()
             actual.append(smallest.value)
-            print heap
+            log(heap)
 
-        print "Actual:", actual
+        log("Actual:", actual)
         expected = [ "Alice", "Bob", "Carol", "David", "Eve" ]
         assert actual == expected, "Heap#removeMin() should remove lowest priority items first"
 
