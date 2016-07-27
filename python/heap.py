@@ -153,6 +153,38 @@ class HeapNode:
 class HeapTest:
 
     def run(self):
+        print "Testing Heap"
+        self.testInsert()
+        self.testRemoveMin()
+        print "Passed Heap Tests!"
+
+
+    def testInsert(self):
+        print "Testing Heap#insert()"
+
+        heap = Heap()
+
+        heap.insert(4, "David")
+        assert heap.root.value is 'David', "Heap#insert() should a value to the heap"
+
+        heap.insert(2, "Bob")
+        assert heap.root.value is 'Bob', "Heap#insert() should add smaller value to top of heap"
+
+        heap.insert(5, "Eve")
+        assert heap.root.value is 'Bob', "Heap#insert() should add largest values to bottom of heap"
+
+        heap.insert(1, "Alice")
+        assert heap.root.value is 'Alice', "Heap#insert() should add smallest value to top of heap"
+
+        heap.insert(3, "Carol")
+        assert heap.root.value is 'Alice', "Heap#insert() should keep smallest value at top of heap"
+
+        log(heap)
+
+
+    def testRemoveMin(self):
+        print "Testing Heap#removeMin()"
+
         heap = Heap()
 
         heap.insert(4, "David")
