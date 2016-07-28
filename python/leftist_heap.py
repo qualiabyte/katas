@@ -85,10 +85,10 @@ class LeftistHeap:
         elif smaller.root.right:
             minRight = smaller.root.right
             smaller.root.right = minRight.merge(h2.root)
-            if smaller.root.left.nullPathLength < smaller.root.right.nullPathLength:
-                smaller.root.swapChildren()
+            smaller.makeLeftist()
 
         smaller.root.update()
+
         return smaller
 
 
@@ -152,6 +152,12 @@ class LeftistNode:
         h2.root = other
         h = LeftistHeap.mergeHeaps(h1, h2)
         return h.root
+
+
+    # Enforces the leftist heap property.
+    def makeLeftist(self):
+        if self.left.nullPathLength < self.right.nullPathLength:
+            self.swapChildren()
 
 
     def swapChildren(self):
