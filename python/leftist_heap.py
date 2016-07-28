@@ -5,7 +5,7 @@ import pprint
 import sys
 
 
-DEBUG = True
+DEBUG = False
 pp = pprint.PrettyPrinter(indent=2)
 
 
@@ -58,9 +58,9 @@ class LeftistHeap:
 
     @staticmethod
     def mergeHeaps(h1, h2):
-        print "MERGE HEAPS {} {}".format(
+        log("MERGE HEAPS {} {}".format(
             str(h1.root.priority) if h1 and h1.root else '',
-            str(h2.root.priority) if h2 and h2.root else '')
+            str(h2.root.priority) if h2 and h2.root else ''))
 
         # Find smaller heap
         smaller = LeftistHeap.findMinHeap(h1, h2)
