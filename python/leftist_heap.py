@@ -136,6 +136,7 @@ class LeftistHeap:
 
 class LeftistNode:
 
+    # Initialises the node.
     def __init__(self, priority=None, value=None):
         self.priority = priority
         self.value = value
@@ -145,6 +146,7 @@ class LeftistNode:
         self.empty = True if (priority, value) == (None, None) else False
 
 
+    # Merges this node with another.
     def merge(self, other):
         h1 = LeftistHeap()
         h2 = LeftistHeap()
@@ -160,14 +162,17 @@ class LeftistNode:
             self.swapChildren()
 
 
+    # Swaps left and right children.
     def swapChildren(self):
         self.left, self.right = self.right, self.left
 
 
+    # Updates state after children have changed.
     def update(self):
         self.updateNullPathLength()
 
 
+    # Updates null path length for this node.
     def updateNullPathLength(self):
         if not self.left and not self.right:
             npl = 0
