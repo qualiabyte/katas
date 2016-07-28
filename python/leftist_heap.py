@@ -73,6 +73,10 @@ class LeftistHeap:
         if not smaller.root:
             return smaller
 
+        # Fill left node if missing
+        elif not smaller.root.left:
+            smaller.root.left = h2.root
+
         # Fill right node if missing right
         elif not smaller.root.right:
             smaller.root.right = h2.root
@@ -81,7 +85,10 @@ class LeftistHeap:
         elif smaller.root.right:
             minRight = smaller.root.right
             smaller.root.right = minRight.merge(h2.root)
+            if smaller.root.left.nullPathLength < smaller.root.right.nullPathLength:
+                smaller.root.swapChildren()
 
+        smaller.root.update()
         return smaller
 
 
@@ -134,6 +141,7 @@ class LeftistNode:
         self.value = value
         self.left = None
         self.right = None
+        self.nullPathLength = 0
         self.empty = True if (priority, value) == (None, None) else False
 
 
@@ -144,6 +152,27 @@ class LeftistNode:
         h2.root = other
         h = LeftistHeap.mergeHeaps(h1, h2)
         return h.root
+
+
+    def swapChildren(self):
+        self.left, self.right = self.right, self.left
+
+
+    def update(self):
+        self.updateNullPathLength()
+
+
+    def updateNullPathLength(self):
+        if not self.left and not self.right:
+            npl = 0
+        elif not self.left:
+            npl = 1 + self.right.nullPathLength
+        elif not self.right:
+            npl = 1 + self.left.nullPathLength
+        else:
+            npl = 1 + min(self.left.nullPathLength, self.right.nullPathLength)
+
+        self.nullPathLength = npl
 
 
     def __nonzero__(self):
