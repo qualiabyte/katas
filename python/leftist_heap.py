@@ -85,7 +85,7 @@ class LeftistHeap:
         elif smaller.root.right:
             minRight = smaller.root.right
             smaller.root.right = minRight.merge(h2.root)
-            smaller.makeLeftist()
+            smaller.root.makeLeftist()
 
         smaller.root.update()
 
