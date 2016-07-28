@@ -196,17 +196,22 @@ class HeapTest:
         heap.insert(5, "Eve")
         heap.insert(1, "Alice")
         heap.insert(3, "Carol")
+        heap.insert(9, "Ikari")
+        heap.insert(7, "Gendo")
+        heap.insert(10, "Joris")
+        heap.insert(6, "Faye")
+        heap.insert(8, "Hamlet")
         log(heap)
 
         actual = []
 
-        for i in range(5):
+        while heap.root != None:
             smallest = heap.removeMin()
             actual.append(smallest.value)
             log(heap)
 
         log("Actual:", actual)
-        expected = [ "Alice", "Bob", "Carol", "David", "Eve" ]
+        expected = [ "Alice", "Bob", "Carol", "David", "Eve", "Faye", "Gendo", "Hamlet", "Ikari", "Joris" ]
         assert actual == expected, "Heap#removeMin() should remove lowest priority items first"
 
 
