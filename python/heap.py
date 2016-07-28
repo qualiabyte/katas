@@ -39,26 +39,20 @@ class Heap:
             root.left, root.right = None, None
             node, root = root, node
 
-        # Let node percolate down
+        # Fill root if none
         if root is None:
-            # Fill root if none
             root = node
 
-        elif root.empty:
-            # Found a hole
-            hole = root
-            root = self.percolateHoleDown(hole)
-
+        # Fill empty left branch
         elif root.left is None:
-            # Fill empty left branch
             root.left = node
 
+        # Fill empty right branch
         elif root.right is None:
-            # Fill empty right branch
             root.right = node
 
+        # Two children: Percolate down left branch
         else:
-            # Two children: percolate down left branch
             root.left = self.percolateDown(root.left, node)
 
         return root
