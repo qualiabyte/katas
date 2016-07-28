@@ -67,14 +67,17 @@ class Heap:
     def percolateHoleDown(self, hole):
         root = hole
 
-        # Find smallest child
+        # One child or less: Allow escape through missing child
         if not root.left and not root.right:
-            minChild = None
-            return minChild
+            return None
+
         elif not root.left:
-            minChild = root.right
+            return root.right
+
         elif not root.right:
-            minChild = root.left
+            return root.left
+
+        # Two children: Percolate down through smaller child
         elif root.left.priority < root.right.priority:
             minChild = root.left
         else:
