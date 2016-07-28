@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import random
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -55,9 +56,11 @@ class Heap:
         elif root.right is None:
             root.right = node
 
-        # Two children: Percolate down left branch
-        else:
+        # Two children: Percolate down left or right branch
+        elif random.random() < 0.5:
             root.left = self.percolateDown(root.left, node)
+        else:
+            root.right = self.percolateDown(root.right, node)
 
         return root
 
