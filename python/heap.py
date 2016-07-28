@@ -20,6 +20,10 @@ class Heap:
         self.root = None
 
 
+    def isEmpty(self):
+        return self.root == None
+
+
     def insert(self, priority, value):
         log("\nINSERT")
 
@@ -129,8 +133,13 @@ class HeapNode:
         self.right = None
         self.empty = True if (priority, value) == (None, None) else False
 
+
     def __nonzero__(self):
         return self.empty != True
+
+
+    def __str__(self):
+        return self.to_string(0)
 
 
     def to_string(self, depth):
@@ -149,9 +158,6 @@ class HeapNode:
             result += "\n  %sRight: %s" % (prefix, self.right.to_string(depth + 1))
 
         return result
-
-    def __str__(self):
-        return self.to_string(0)
 
 
 class HeapTest:
@@ -205,7 +211,7 @@ class HeapTest:
 
         actual = []
 
-        while heap.root != None:
+        while not heap.isEmpty():
             smallest = heap.removeMin()
             actual.append(smallest.value)
             log(heap)
