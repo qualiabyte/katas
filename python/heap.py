@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import pprint
-
 pp = pprint.PrettyPrinter(indent=2)
+
 DEBUG = False
 
 
@@ -47,33 +47,7 @@ class Heap:
         elif root.empty:
             # Found a hole
             hole = root
-
-            # Find smallest child
-            if not root.left and not root.right:
-                minChild = None
-                return minChild
-            elif not root.left:
-                minChild = root.right
-            elif not root.right:
-                minChild = root.left
-            elif root.left.priority < root.right.priority:
-                minChild = root.left
-            else:
-                minChild = root.right
-
-            # Pull smallest child up
-            root.priority = minChild.priority
-            root.value = minChild.value
-
-            # Push hole into smallest child
-            root.empty = False
-            minChild.empty = True
-
-            # Percolate hole down
-            if root.left == minChild:
-                root.left = self.percolateDown(root.left, hole)
-            else:
-                root.right = self.percolateDown(root.right, hole)
+            root = self.percolateHoleDown(hole)
 
         elif root.left is None:
             # Fill empty left branch
@@ -86,6 +60,39 @@ class Heap:
         else:
             # Two children: percolate down left branch
             root.left = self.percolateDown(root.left, node)
+
+        return root
+
+
+    def percolateHoleDown(self, hole):
+        root = hole
+
+        # Find smallest child
+        if not root.left and not root.right:
+            minChild = None
+            return minChild
+        elif not root.left:
+            minChild = root.right
+        elif not root.right:
+            minChild = root.left
+        elif root.left.priority < root.right.priority:
+            minChild = root.left
+        else:
+            minChild = root.right
+
+        # Pull smallest child up
+        root.priority = minChild.priority
+        root.value = minChild.value
+
+        # Push hole into smallest child
+        root.empty = False
+        minChild.empty = True
+
+        # Percolate hole down
+        if root.left == minChild:
+            root.left = self.percolateHoleDown(root.left)
+        else:
+            root.right = self.percolateHoleDown(root.right)
 
         return root
 
@@ -106,7 +113,7 @@ class Heap:
         self.root = hole
 
         # Percolate the hole down
-        self.root = self.percolateDown(self.root, hole)
+        self.root = self.percolateHoleDown(hole)
 
         log("MIN: %s" % min.value)
         return min
