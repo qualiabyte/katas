@@ -2,8 +2,10 @@
 
 import random
 import pprint
-pp = pprint.PrettyPrinter(indent=2)
+import sys
 
+
+pp = pprint.PrettyPrinter(indent=2)
 DEBUG = False
 
 
@@ -13,6 +15,11 @@ def log(message, *argv):
             print message, argv
         else:
             print message
+
+
+def say(message):
+    sys.stdout.write(message)
+    sys.stdout.flush()
 
 
 class LeftistHeap:
@@ -29,40 +36,67 @@ class LeftistHeap:
         log("\nINSERT")
 
         node = LeftistNode(priority, value)
+
         if self.root is None:
+            # Fill root if missing
             self.root = node
         else:
-            self.root = self.percolateDown(self.root, node)
+            # Create new heap for node
+            heap = LeftistHeap()
+            heap.insert(priority, value)
+
+            # Merge with new heap
+            self.merge(heap)
 
 
-    def percolateDown(self, root, node):
-        log("PERCOLATE DOWN {}, {}".format(root.priority, node.priority))
+    def merge(self, heap2):
+        heap1 = self
+        merged = LeftistHeap.mergeHeaps(heap1, heap2)
+        self.root = merged.root
+        return self.root
 
-        # Swap with root if node is smaller
-        if node and root and node.priority < root.priority:
-            node.left, node.right = root.left, root.right
-            root.left, root.right = None, None
-            node, root = root, node
 
-        # Fill root if none
-        if root is None:
-            root = node
+    @staticmethod
+    def mergeHeaps(h1, h2):
+        print "MERGE HEAPS {} {}".format(
+            str(h1.root.priority) if h1 and h1.root else '',
+            str(h2.root.priority) if h2 and h2.root else '')
 
-        # Fill empty left branch
-        elif root.left is None:
-            root.left = node
+        # Find smaller heap
+        smaller = LeftistHeap.findMinHeap(h1, h2)
 
-        # Fill empty right branch
-        elif root.right is None:
-            root.right = node
+        # Swap if h2 is smaller
+        if smaller is h2:
+            h1, h2 = h2, h1
 
-        # Two children: Percolate down left or right branch
-        elif random.random() < 0.5:
-            root.left = self.percolateDown(root.left, node)
+        # Return empty heap if missing root
+        if not smaller.root:
+            return smaller
+
+        # Fill right node if missing right
+        elif not smaller.root.right:
+            smaller.root.right = h2.root
+
+        # Merge with right node if present
+        elif smaller.root.right:
+            minRight = smaller.root.right
+            smaller.root.right = minRight.merge(h2.root)
+
+        return smaller
+
+
+    @staticmethod
+    def findMinHeap(h1, h2):
+        if not h1.root and not h2.root:
+            return h1
+        elif not h1.root:
+            return h2
+        elif not h2.root:
+            return h1
+        elif h1.root.priority < h2.root.priority:
+            return h1
         else:
-            root.right = self.percolateDown(root.right, node)
-
-        return root
+            return h2
 
 
     def percolateHoleDown(self, hole):
@@ -135,6 +169,15 @@ class LeftistNode:
         self.left = None
         self.right = None
         self.empty = True if (priority, value) == (None, None) else False
+
+
+    def merge(self, other):
+        h1 = LeftistHeap()
+        h2 = LeftistHeap()
+        h1.root = self
+        h2.root = other
+        h = LeftistHeap.mergeHeaps(h1, h2)
+        return h.root
 
 
     def __nonzero__(self):
