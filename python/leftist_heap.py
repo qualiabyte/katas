@@ -5,8 +5,8 @@ import pprint
 import sys
 
 
+DEBUG = True
 pp = pprint.PrettyPrinter(indent=2)
-DEBUG = False
 
 
 def log(message, *argv):
@@ -99,42 +99,6 @@ class LeftistHeap:
             return h2
 
 
-    def percolateHoleDown(self, hole):
-        root = hole
-
-        # One child or less: Allow escape through missing child
-        if not root.left and not root.right:
-            return None
-
-        elif not root.left:
-            return root.right
-
-        elif not root.right:
-            return root.left
-
-        # Two children: Percolate down through smaller child
-        elif root.left.priority < root.right.priority:
-            minChild = root.left
-        else:
-            minChild = root.right
-
-        # Pull smallest child up
-        root.priority = minChild.priority
-        root.value = minChild.value
-
-        # Push hole into smallest child
-        root.empty = False
-        minChild.empty = True
-
-        # Percolate hole down
-        if root.left == minChild:
-            root.left = self.percolateHoleDown(root.left)
-        else:
-            root.right = self.percolateHoleDown(root.right)
-
-        return root
-
-
     def removeMin(self):
         log("\nREMOVE MIN")
         log(self)
@@ -142,18 +106,20 @@ class LeftistHeap:
         # Save the smallest node
         min = self.root
 
-        # Create a new hole
-        hole = LeftistNode()
-        hole.left = self.root.left
-        hole.right = self.root.right
-
-        # Replace the root
-        self.root = hole
-
-        # Percolate the hole down
-        self.root = self.percolateHoleDown(hole)
+        # Replace root with minimum of merged children
+        if not self.root:
+            self.root = None
+        elif not self.root.left and not self.root.right:
+            self.root = None
+        elif not self.root.left:
+            self.root = self.root.right
+        elif not self.root.right:
+            self.root = self.root.left
+        else:
+            self.root = self.root.left.merge(self.root.right)
 
         log("MIN: %s" % min.value)
+
         return min
 
 
