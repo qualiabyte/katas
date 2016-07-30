@@ -6,6 +6,7 @@ public class KataTests extends Tests
   {
     log("Testing Katas");
     StackTests.run();
+    HashTests.run();
     BinaryTreeTests.run();
     AVLTreeTests.run();
     log("Passed Kata Tests!");
