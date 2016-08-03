@@ -2,15 +2,17 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 int main(int argc, char** argv)
 {
-  std::cout << "Hello world!" << std::endl;
-  std::cout << "Arguments: ";
+  cout << "Hello world!" << endl;
+  cout << "Arguments: ";
   for (int i = 1; i < argc; i++)
   {
-    std::string argument = argv[i];
-    std::string suffix = i < argc - 1 ? ", " : "";
-    std::cout << argument << suffix;
+    string argument = argv[i];
+    string suffix = i < argc - 1 ? ", " : "";
+    cout << argument << suffix;
   }
-  std::cout << std::endl;
+  cout << endl;
 }
