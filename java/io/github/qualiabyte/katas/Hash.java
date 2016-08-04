@@ -1,22 +1,5 @@
 package io.github.qualiabyte.katas;
 
-import java.lang.Math;
-
-class Log
-{
-  static boolean DEBUG = false;
-  static void debug(String s)
-  {
-    if (DEBUG)
-      System.out.println(s);
-  }
-}
-
-interface Hashable
-{
-  public int hash(int tableSize);
-}
-
 interface HashFunction
 {
   public static int hash(String s, int tableSize)
@@ -162,6 +145,11 @@ class SimpleHash implements HashFunction
 
     return hashValue;
   }
+}
+
+interface Hashable
+{
+  public int hash(int tableSize);
 }
 
 class HashNode implements Hashable
