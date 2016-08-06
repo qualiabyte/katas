@@ -74,27 +74,21 @@ public:
   // Gets reference to stored value by key.
   V* get(K key)
   {
-    int hashValue = hashString((string) key, tableSize);
-    auto item = findAt(key, hashValue);
+    int hash = hashString((string) key, tableSize);
+    auto item = find(key, hash);
     auto value = item ? & item->value : NULL;
     return value;
   }
 
-  // Finds item with key by probing from start position.
-  HashItem<K,V>* findAt(K key, int start)
+  // Finds item with key by probing from hash position.
+  HashItem<K,V>* find(K key, int hash)
   {
-    int i = 0;
-    int position = start;
-    auto item = table[position];
-    bool success = item && item->key == key;
-    while (item && !success)
+    auto item = table[hash];
+    for (int i = 0; item && item->key != key; i++)
     {
-      i++;
-      position = start + i * i;
-      item = table[position];
-      success = item && item->key == key;
+      item = table[hash + i*i];
     }
-    return success ? item : NULL;
+    return item && item->key == key ? item : NULL;
   }
 
   // Puts hash item with given key and value.
