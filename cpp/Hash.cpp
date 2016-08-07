@@ -16,16 +16,13 @@ using namespace std;
 
 template<class K, class V, class F> class Hash;
 template<class K, class V> class HashItem;
-template<class K> class HashFunction;
 
 
-template<class K>
 class HashFunction
 {
 public:
-  int operator()(K key, int tableSize)
+  int operator()(string s, int tableSize)
   {
-    auto const & s = static_cast<string>(key);
     int hashValue = 0;
 
     for (int i = 0; i < s.length(); i++)
@@ -59,7 +56,7 @@ public:
 };
 
 
-template<class K = string, class V = string, class F = HashFunction<K>>
+template<class K = string, class V = string, class F = HashFunction>
 class Hash
 {
 public:
@@ -207,7 +204,7 @@ using namespace Katas::Pokemon;
 void testHashInsertSingle()
 {
   cout << "Testing Hash Insert Single..." << endl;
-  auto hash = new Hash<string,Species>();
+  auto hash = new Hash<string,Species,HashFunction>();
 
   hash->put(POKEMON[BULBASAUR].name, POKEMON[BULBASAUR]);
 
