@@ -14,8 +14,31 @@ namespace Hash {
 using namespace std;
 
 
-template<class K, class V> class Hash;
+template<class K, class V, class F> class Hash;
 template<class K, class V> class HashItem;
+template<class K> class HashFunction;
+
+
+template<class K>
+class HashFunction
+{
+public:
+  int operator()(K key, int tableSize)
+  {
+    auto const & s = static_cast<string>(key);
+    int hashValue = 0;
+
+    for (int i = 0; i < s.length(); i++)
+      hashValue = 37 * hashValue + s[i];
+
+    hashValue %= tableSize;
+
+    if (hashValue < 0)
+      hashValue += tableSize;
+
+    return hashValue;
+  }
+};
 
 
 template<class K, class V>
@@ -31,17 +54,12 @@ public:
   ~HashItem()
   {}
 
-  int hash(int tableSize)
-  {
-    return Hash<K,V>::hashString((string) key, tableSize);
-  }
-
   K key;
   V value;
 };
 
 
-template<class K = string, class V = string>
+template<class K = string, class V = string, class F = HashFunction<K>>
 class Hash
 {
 public:
@@ -74,7 +92,7 @@ public:
   // Gets reference to stored value by key.
   V* get(K key)
   {
-    int hash = hashString((string) key, tableSize);
+    int hash = hashFunction(key, tableSize);
     auto item = find(key, hash);
     auto value = item ? & item->value : NULL;
     return value;
@@ -96,7 +114,7 @@ public:
   {
     // Create new hash item
     auto item = new HashItem<K,V>(key, val);
-    auto hash = hashString((string) key, tableSize);
+    auto hash = hashFunction(key, tableSize);
     auto position = nextPosition(hash);
 
     // Insert item into table
@@ -135,7 +153,7 @@ public:
       if (auto cell = oldTable[i])
       {
         auto item = cell;
-        int hashValue = item->hash(newSize);
+        int hashValue = hashFunction(item->key, newSize);
         newTable[hashValue] = item;
       }
     }
@@ -173,22 +191,7 @@ public:
     return true;
   }
 
-  // Computes hash value for given string and table size.
-  static int hashString(string s, int tableSize)
-  {
-    int hashValue = 0;
-
-    for (int i = 0; i < s.length(); i++)
-      hashValue = 37 * hashValue + s[i];
-
-    hashValue %= tableSize;
-
-    if (hashValue < 0)
-      hashValue += tableSize;
-
-    return hashValue;
-  }
-
+  F hashFunction;
   HashItem<K,V>** table;
   int tableSize = DEFAULT_TABLE_SIZE;
   int totalCells = 0;
@@ -214,6 +217,11 @@ void testHashInsertSingle()
   assert(bulbasaur.name == "Bulbasaur");
   assert(bulbasaur.type1 == "Grass");
   assert(bulbasaur.type2 == "Poison");
+
+  cout << "bulbasaur.id: " << bulbasaur.id << endl;
+  cout << "bulbasaur.name: " << bulbasaur.name << endl;
+  cout << "bulbasaur.type1: " << bulbasaur.type1 << endl;
+  cout << "bulbasaur.type2: " << bulbasaur.type2 << endl;
 
   delete hash;
 }
