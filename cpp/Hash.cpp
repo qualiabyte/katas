@@ -35,6 +35,15 @@ public:
 
     return hashValue;
   }
+
+  int operator()(int i, int tableSize)
+  {
+    int hashValue = i % tableSize;
+    if (hashValue < 0)
+      hashValue += tableSize;
+
+    return hashValue;
+  }
 };
 
 
@@ -56,7 +65,7 @@ public:
 };
 
 
-template<class K = string, class V = string, class F = HashFunction>
+template<typename K = string, typename V = string, typename F = HashFunction>
 class Hash
 {
 public:
@@ -223,6 +232,30 @@ void testHashInsertSingle()
   delete hash;
 }
 
+void testHashInsertPrimitive()
+{
+  cout << "Testing Hash Insert Primitive..." << endl;
+  auto hash = new Hash<int,Species>();
+
+  for (int i = 1; i <= 9; i++)
+    hash->put(POKEMON[i].id, POKEMON[i]);
+
+  auto venusaur = *hash->get(VENUSAUR);
+
+  assert(venusaur.id == 3);
+  assert(venusaur.name == "Venusaur");
+  assert(venusaur.type1 == "Grass");
+  assert(venusaur.type2 == "Poison");
+
+  cout << "venusaur.id: " << venusaur.id << endl;
+  cout << "venusaur.name: " << venusaur.name << endl;
+  cout << "venusaur.type1: " << venusaur.type1 << endl;
+  cout << "venusaur.type2: " << venusaur.type2 << endl;
+
+  delete hash;
+}
+
+
 void testHashInsert()
 {
   cout << "Testing Hash Insert..." << endl;
@@ -247,6 +280,7 @@ void testHash()
 {
   cout << "Testing Hash" << endl;
   testHashInsertSingle();
+  testHashInsertPrimitive();
   testHashInsert();
   cout << "Passed Hash Tests!" << endl;
 }
