@@ -37,12 +37,65 @@ let Sorting =
         a[smallestPos] = next
       }
     }
-  }
+  },
+
+  swap: (a, i, j) =>
+  {
+    let tmp = a[i]
+    a[i] = a[j]
+    a[j] = a[i]
+  },
 
   // Shellsort
   // Heapsort
   // Mergesort
   // Quicksort
+  quicksort: (a) =>
+  {
+    // Return trivial arrays
+    if (a.length <= 1)
+      return a
+
+    // Choose sample of three elements
+    let leftPos = 0
+    let middlePos = Math.floor(a.length / 2)
+    let rightPos = a.length - 1
+    let left = a[leftPos]
+    let middle = a[middlePos]
+    let right = a[rightPos]
+    let sample = [left, middle, right]
+
+    // Sort the sample
+    if (sample[0] > sample[1]) Sorting.swap(sample, 0, 1)
+    if (sample[1] > sample[2]) Sorting.swap(sample, 1, 2)
+
+    // Select the median
+    let median = sample[1]
+    let medianPos = median == left ? leftPos
+      : median == middle ? middlePos
+      : rightPos
+
+    // Set the pivot
+    let pivot = median
+    let pivotPos = medianPos
+
+    // Remove the pivot
+    a.splice(pivotPos, 1)
+
+    // Partition the array
+    let leftArray = a.filter((item) => item <= pivot)
+    let rightArray = a.filter((item) => item > pivot)
+
+    // Sort the partitions
+    leftArray = Sorting.quicksort(leftArray)
+    rightArray = Sorting.quicksort(rightArray)
+
+    // Fill original array with sorted results
+    a.splice(0, a.length, ...leftArray, pivot, ...rightArray)
+
+    // Return the sorted array
+    return a
+  }
 }
 
 // Tests
@@ -57,7 +110,8 @@ class Tests
     log("Testing Sorting methods")
     this.testSortMethods([
       'defaultSort',
-      'insertionSort'
+      'insertionSort',
+      'quicksort'
     ])
     log("Passed Sorting methods!")
   }
