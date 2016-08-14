@@ -55,8 +55,10 @@ class Tests
   run()
   {
     log("Testing Sorting methods")
-    this.testDefaultSort()
-    this.testInsertionSort()
+    this.testSortMethods([
+      'defaultSort',
+      'insertionSort'
+    ])
     log("Passed Sorting methods!")
   }
 
@@ -71,32 +73,19 @@ class Tests
     console.log(arguments)
   }
 
-  testDefaultSort()
+  testSortMethods(names)
   {
-    log("Testing Sort.defaultSort()")
-    let array = [ 9, 1, 8, 2, 7, 6, 3, 5, 4 ]
-    let expected = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
-
-    Sorting.defaultSort(array)
-
-    this.assert(array.length == expected.length, "Length of sorted array should match input array")
-
-    for (let i = 0; i < expected.length; i++)
-    {
-      this.assert(
-        array[i] == expected[i],
-        `Sorted element should match expected value (${i}: ${array[i]}, ${expected[i]})`
-      )
-    }
+    names.forEach((name) =>
+      this.testSortBasics(Sorting[name], name))
   }
 
-  testInsertionSort()
+  testSortBasics(sortMethod, name)
   {
-    log("Testing Sort.insertionSort()")
+    log(`Testing basics for sorting method ${name}`)
     let array = [ 9, 1, 8, 2, 7, 6, 3, 5, 4 ]
     let expected = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
 
-    Sorting.insertionSort(array)
+    sortMethod(array)
 
     this.assert(array.length == expected.length, "Length of sorted array should match input array")
 
