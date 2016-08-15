@@ -39,45 +39,23 @@ let Sorting =
     }
   },
 
-  swap: (a, i, j) =>
-  {
-    let tmp = a[i]
-    a[i] = a[j]
-    a[j] = a[i]
-  },
-
   // Shellsort
   // Heapsort
   // Mergesort
+
   // Quicksort
   quicksort: (a) =>
   {
     // Return trivial arrays
     if (a.length <= 1)
       return a
-
-    // Choose sample of three elements
-    let leftPos = 0
-    let middlePos = Math.floor(a.length / 2)
-    let rightPos = a.length - 1
-    let left = a[leftPos]
-    let middle = a[middlePos]
-    let right = a[rightPos]
-    let sample = [left, middle, right]
-
-    // Sort the sample
-    if (sample[0] > sample[1]) Sorting.swap(sample, 0, 1)
-    if (sample[1] > sample[2]) Sorting.swap(sample, 1, 2)
-
-    // Select the median
-    let median = sample[1]
-    let medianPos = median == left ? leftPos
-      : median == middle ? middlePos
-      : rightPos
+    else
+    if (a.length <= 10)
+      return Sorting.insertionSort(a)
 
     // Set the pivot
-    let pivot = median
-    let pivotPos = medianPos
+    let pivot = Sorting.medianOfThree(a)
+    let pivotPos = Math.floor(a.length / 2)
 
     // Remove the pivot
     a.splice(pivotPos, 1)
@@ -95,6 +73,30 @@ let Sorting =
 
     // Return the sorted array
     return a
+  },
+
+  // Swaps array values at given indices.
+  swap: (a, i, j) =>
+  {
+    let tmp = a[i]
+    a[i] = a[j]
+    a[j] = a[i]
+  },
+
+  // Estimates the array median by sorting left, right, and center.
+  medianOfThree: (array) =>
+  {
+    let left = 0
+    let middle = Math.floor(array.length / 2)
+    let right = array.length - 1
+
+    if (array[left] > array[right]) Sorting.swap(array, left, right)
+    if (array[left] > array[middle]) Sorting.swap(array, left, middle)
+    if (array[middle] > array[right]) Sorting.swap(array, middle, right)
+
+    let median = array[middle]
+
+    return median
   }
 }
 
