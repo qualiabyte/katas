@@ -8,9 +8,16 @@ let log = function()
 let Sorting =
 {
   // Default Sort
-  defaultSort: (a) =>
+  defaultSort: (a, compare) =>
   {
-    return a.sort()
+    compare = compare || Sorting.compareNumeric
+    return a.sort(compare)
+  },
+
+  // Compares given elements numerically.
+  compareNumeric: (a, b) =>
+  {
+    return a - b
   },
 
   // Insertion Sort
