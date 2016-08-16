@@ -46,10 +46,7 @@ let Sorting =
   // Quicksort
   quicksort: (a) =>
   {
-    // Return trivial arrays
-    if (a.length <= 1)
-      return a
-    else
+    // Use insertion sort for small arrays
     if (a.length <= 10)
       return Sorting.insertionSort(a)
 
@@ -80,7 +77,7 @@ let Sorting =
   {
     let tmp = a[i]
     a[i] = a[j]
-    a[j] = a[i]
+    a[j] = tmp
   },
 
   // Estimates the array median by sorting left, right, and center.
