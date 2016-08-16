@@ -49,30 +49,50 @@ let Sorting =
   // Heapsort
   // Mergesort
 
-  // Quicksort
+  // Quicksorts the given array in place.
   quicksort: (a) =>
   {
+    let result = Sorting._quicksort(a, 0, a.length - 1)
+    return a
+  },
+
+  // Quicksorts the given subarray in place.
+  _quicksort: (a, left, right) =>
+  {
     // Use insertion sort for small arrays
-    if (a.length <= 10)
-      return Sorting.insertionSort(a)
+    let length = 1 + right - left
+    if (length <= 3)
+      return Sorting._insertionSort(a, left, right)
 
     // Set the pivot
-    let pivot = Sorting.medianOfThree(a)
-    let pivotPos = Math.floor(a.length / 2)
+    let pivot = Sorting.medianOfThree(a, left, right)
+    let p = Math.floor(left + length / 2)
 
-    // Remove the pivot
-    a.splice(pivotPos, 1)
+    // Move pivot to next to last position
+    Sorting.swap(a, p, right - 1)
+
+    // Initialise the partion boundaries
+    let i = 0
+    let j = right - 1
 
     // Partition the array
-    let leftArray = a.filter((item) => item <= pivot)
-    let rightArray = a.filter((item) => item > pivot)
+    for ( ; ; )
+    {
+      while (a[++i] < pivot) {}
+      while (a[--j] > pivot) {}
 
-    // Sort the partitions
-    leftArray = Sorting.quicksort(leftArray)
-    rightArray = Sorting.quicksort(rightArray)
+      if (i < j)
+        Sorting.swap(a, i, j)
+      else
+        break
+    }
 
-    // Fill original array with sorted results
-    a.splice(0, a.length, ...leftArray, pivot, ...rightArray)
+    // Restore the pivot
+    Sorting.swap(a, i, right - 1)
+
+    // Sort the left and right subarrays
+    Sorting._quicksort(a, left, i - 1)
+    Sorting._quicksort(a, i + 1, right)
 
     // Return the sorted array
     return a
@@ -86,19 +106,17 @@ let Sorting =
     a[j] = tmp
   },
 
-  // Estimates the array median by sorting left, right, and center.
-  medianOfThree: (array) =>
+  // Estimates the subarray median by sorting left, right, and center.
+  medianOfThree: (array, left, right) =>
   {
-    let left = 0
-    let middle = Math.floor(array.length / 2)
-    let right = array.length - 1
+    let length = 1 + right - left
+    let middle = Math.floor(left + length / 2)
 
     if (array[left] > array[right]) Sorting.swap(array, left, right)
     if (array[left] > array[middle]) Sorting.swap(array, left, middle)
     if (array[middle] > array[right]) Sorting.swap(array, middle, right)
 
     let median = array[middle]
-
     return median
   }
 }
