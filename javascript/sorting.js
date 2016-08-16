@@ -68,7 +68,7 @@ let Sorting =
   {
     // Use insertion sort for small arrays
     let length = 1 + right - left
-    if (length <= 3)
+    if (length <= 220)
       return Sorting._insertionSort(a, left, right)
 
     // Set the pivot
@@ -100,9 +100,6 @@ let Sorting =
     // Sort the left and right subarrays
     Sorting._quicksort(a, left, i - 1)
     Sorting._quicksort(a, i + 1, right)
-
-    // Return the sorted array
-    return a
   },
 
   // Swaps array values at given indices.
