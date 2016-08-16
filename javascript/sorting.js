@@ -140,6 +140,11 @@ class Tests
       'insertionSort',
       'quicksort'
     ])
+
+    this.testSortPerformance([
+      'defaultSort',
+      'quicksort'
+    ])
     log("Passed Sorting methods!")
   }
 
@@ -156,8 +161,9 @@ class Tests
 
   testSortMethods(names)
   {
-    names.forEach((name) =>
-      this.testSortBasics(Sorting[name], name))
+    names.forEach((name) => {
+      this.testSortBasics(Sorting[name], name)
+    })
   }
 
   testSortBasics(sortMethod, name)
@@ -177,6 +183,85 @@ class Tests
         `Sorted element should match expected value (${i}: ${array[i]}, ${expected[i]})`
       )
     }
+  }
+
+  testSortPerformance(names)
+  {
+    for (let n in names)
+    {
+      let name = names[n]
+      let method = Sorting[name]
+      let result = this.testSortPerformanceFor(method, name)
+      log(`Result: ${JSON.stringify(result)}`)
+    }
+  }
+
+  testSortPerformanceFor(method, name)
+  {
+    log(`Testing performance for ${name}`)
+
+    let benchmarks = [ 100, 10E3, 100E3, 1E6 ]
+    let results = []
+
+    for (let b in benchmarks)
+    {
+      let N = benchmarks[b]
+      let result =
+      {
+        name: name,
+        size: N,
+        time: Infinity
+      }
+      log(`Running benchmark with N = ${N}`)
+
+      // Fill test array with sequential values
+      let array = []
+      for (let i = 0; i < N; i++)
+      {
+        array.push(i)
+      }
+
+      // Copy sorted array
+      let expected = array.slice(0, array.length)
+
+      // Shuffle test data
+      for (let i = 0; i < N; i++)
+      {
+        let r1 = i
+        let r2 = Math.floor(N * Math.random())
+        Sorting.swap(array, r1, r2)
+      }
+
+      // Perform the benchmark
+      let t0 = Date.now()
+
+      method(array)
+
+      let t1 = Date.now()
+      let timeDelta = (t1 - t0) / 1000.0
+
+      // Check the sorted length
+      this.assert(
+        array.length == expected.length,
+        "Length of sorted array should match input array"
+      )
+
+      // Check the sorted values
+      for (let i = 0; i < expected.length; i++)
+      {
+        this.assert(
+          array[i] == expected[i],
+          `Sorted element should match expected value (${i}: ${array[i]}, ${expected[i]})`
+        )
+      }
+
+      // Update the result
+      result.time = timeDelta
+
+      // Add result to benchmark data
+      results.push(result)
+    }
+    return results
   }
 }
 
