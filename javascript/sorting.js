@@ -16,13 +16,19 @@ let Sorting =
   // Insertion Sort
   insertionSort: (a) =>
   {
-    for (let i = 0; i < a.length; i++)
+    return Sorting._insertionSort(a, 0, a.length - 1)
+  },
+
+  // Insertion sorts the given subarray in place.
+  _insertionSort: (a, start, end) =>
+  {
+    for (let i = start; i < end; i++)
     {
       let next = a[i]
       let smallest = a[i]
       let smallestPos = i
 
-      for (let j = i; j < a.length; j++)
+      for (let j = i + 1; j <= end; j++)
       {
         if (a[j] < smallest)
         {
