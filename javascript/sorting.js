@@ -110,22 +110,17 @@ let Sorting =
   },
 
   // Quicksorts the given subarray in place. Optimized for simplicity.
-  _quicksort2: (a, left, right) =>
+  _quicksort2: (a, left, right, compare=Sorting.compare) =>
   {
-    let length = right - left + 1
-    if (length <= 20)
-      return Sorting._insertionSort(a, left, right)
-
-    let p = Math.floor(left + length / 2)
+    let p = Math.floor(left + (right - left)/2)
     let pivot = a[p]
-
     let i = left
     let j = right
 
     while (true)
     {
-      while (a[i] < pivot) { i++ }
-      while (a[j] > pivot) { j-- }
+      while (compare(a[i], pivot) < 0) { i++ }
+      while (compare(a[j], pivot) > 0) { j-- }
 
       if (i < j)
         Sorting.swap(a, i, j)
