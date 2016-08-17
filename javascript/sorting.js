@@ -14,16 +14,57 @@ let Sorting =
     return a.sort(compare)
   },
 
+  // Insertion sorts the given array in place.
+  insertionSort: (a) =>
+  {
+    Sorting._insertionSort(a, 0, a.length - 1)
+    return a
+  },
+
+  // Quicksorts the given array in place.
+  quicksort: (a, compare=Sorting.compare) =>
+  {
+    Sorting._quicksort(a, 0, a.length - 1, compare)
+    return a
+  },
+
+  // Quicksorts the given array in place, optimized for simplicity.
+  quicksort2: (a) =>
+  {
+    Sorting._quicksort2(a, 0, a.length - 1)
+    return a
+  },
+
+  // Shellsort
+  // Heapsort
+  // Mergesort
+
   // Compares given elements numerically.
   compare: (a, b) =>
   {
     return a - b
   },
 
-  // Insertion Sort
-  insertionSort: (a) =>
+  // Swaps array values at given indices.
+  swap: (a, i, j) =>
   {
-    return Sorting._insertionSort(a, 0, a.length - 1)
+    let tmp = a[i]
+    a[i] = a[j]
+    a[j] = tmp
+  },
+
+  // Estimates the subarray median by sorting left, right, and center.
+  medianOfThree: (array, left, right, compare=Sorting.compare) =>
+  {
+    let length = 1 + right - left
+    let middle = Math.floor(left + length / 2)
+
+    if (compare(array[left], array[right]) > 0) Sorting.swap(array, left, right)
+    if (compare(array[left], array[middle]) > 0) Sorting.swap(array, left, middle)
+    if (compare(array[middle], array[right]) > 0) Sorting.swap(array, middle, right)
+
+    let median = array[middle]
+    return median
   },
 
   // Insertion sorts the given subarray in place.
@@ -50,17 +91,6 @@ let Sorting =
         a[smallestPos] = next
       }
     }
-  },
-
-  // Shellsort
-  // Heapsort
-  // Mergesort
-
-  // Quicksorts the given array in place.
-  quicksort: (a, compare=Sorting.compare) =>
-  {
-    Sorting._quicksort(a, 0, a.length - 1, compare)
-    return a
   },
 
   // Quicksorts the given subarray in place.
@@ -102,15 +132,8 @@ let Sorting =
     Sorting._quicksort(a, i + 1, right, compare)
   },
 
-  // Quicksorts the given array in place.
-  quicksort2: (a, compare=Sorting.compare) =>
-  {
-    Sorting._quicksort2(a, 0, a.length - 1, compare)
-    return a
-  },
-
-  // Quicksorts the given subarray in place. Optimized for simplicity.
-  _quicksort2: (a, left, right, compare=Sorting.compare) =>
+  // Quicksorts the given subarray in place, optimized for simplicity.
+  _quicksort2: (a, left, right) =>
   {
     let p = Math.floor(left + (right - left)/2)
     let pivot = a[p]
@@ -119,8 +142,8 @@ let Sorting =
 
     while (true)
     {
-      while (compare(a[i], pivot) < 0) { i++ }
-      while (compare(a[j], pivot) > 0) { j-- }
+      while (a[i] < pivot) { i++ }
+      while (a[j] > pivot) { j-- }
 
       if (i < j)
         Sorting.swap(a, i, j)
@@ -128,32 +151,9 @@ let Sorting =
         break
     }
 
-    Sorting._quicksort(a, left, i, compare)
-    Sorting._quicksort(a, i, right, compare)
+    Sorting._quicksort(a, left, i)
+    Sorting._quicksort(a, i, right)
   },
-
-
-  // Swaps array values at given indices.
-  swap: (a, i, j) =>
-  {
-    let tmp = a[i]
-    a[i] = a[j]
-    a[j] = tmp
-  },
-
-  // Estimates the subarray median by sorting left, right, and center.
-  medianOfThree: (array, left, right, compare=Sorting.compare) =>
-  {
-    let length = 1 + right - left
-    let middle = Math.floor(left + length / 2)
-
-    if (compare(array[left], array[right]) > 0) Sorting.swap(array, left, right)
-    if (compare(array[left], array[middle]) > 0) Sorting.swap(array, left, middle)
-    if (compare(array[middle], array[right]) > 0) Sorting.swap(array, middle, right)
-
-    let median = array[middle]
-    return median
-  }
 }
 
 // Tests
