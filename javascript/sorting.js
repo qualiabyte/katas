@@ -68,7 +68,7 @@ let Sorting =
   {
     // Use insertion sort for small arrays
     let length = 1 + right - left
-    if (length <= 220)
+    if (length <= 20)
       return Sorting._insertionSort(a, left, right)
 
     // Set the pivot
@@ -79,7 +79,7 @@ let Sorting =
     Sorting.swap(a, p, right - 1)
 
     // Initialise the partion boundaries
-    let i = 0
+    let i = left
     let j = right - 1
 
     // Partition the array
