@@ -10,12 +10,12 @@ let Sorting =
   // Default Sort
   defaultSort: (a, compare) =>
   {
-    compare = compare || Sorting.compareNumeric
+    compare = compare || Sorting.compare
     return a.sort(compare)
   },
 
   // Compares given elements numerically.
-  compareNumeric: (a, b) =>
+  compare: (a, b) =>
   {
     return a - b
   },
