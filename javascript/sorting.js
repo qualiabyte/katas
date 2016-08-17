@@ -102,6 +102,42 @@ let Sorting =
     Sorting._quicksort(a, i + 1, right)
   },
 
+  // Quicksorts the given array in place.
+  quicksort2: (a) =>
+  {
+    Sorting._quicksort2(a, 0, a.length - 1)
+    return a
+  },
+
+  // Quicksorts the given subarray in place. Optimized for simplicity.
+  _quicksort2: (a, left, right) =>
+  {
+    let length = right - left + 1
+    if (length <= 20)
+      return Sorting._insertionSort(a, left, right)
+
+    let p = Math.floor(left + length / 2)
+    let pivot = a[p]
+
+    let i = left
+    let j = right
+
+    while (true)
+    {
+      while (a[i] < pivot) { i++ }
+      while (a[j] > pivot) { j-- }
+
+      if (i < j)
+        Sorting.swap(a, i, j)
+      else
+        break
+    }
+
+    Sorting._quicksort(a, left, i)
+    Sorting._quicksort(a, i, right)
+  },
+
+
   // Swaps array values at given indices.
   swap: (a, i, j) =>
   {
@@ -138,12 +174,14 @@ class Tests
     this.testSortMethods([
       'defaultSort',
       'insertionSort',
-      'quicksort'
+      'quicksort',
+      'quicksort2'
     ])
 
     this.testSortPerformance([
       'defaultSort',
-      'quicksort'
+      'quicksort',
+      'quicksort2',
     ])
     log("Passed Sorting methods!")
   }
