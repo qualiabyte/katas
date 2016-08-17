@@ -57,22 +57,22 @@ let Sorting =
   // Mergesort
 
   // Quicksorts the given array in place.
-  quicksort: (a) =>
+  quicksort: (a, compare=Sorting.compare) =>
   {
-    let result = Sorting._quicksort(a, 0, a.length - 1)
+    Sorting._quicksort(a, 0, a.length - 1, compare)
     return a
   },
 
   // Quicksorts the given subarray in place.
-  _quicksort: (a, left, right) =>
+  _quicksort: (a, left, right, compare=Sorting.compare) =>
   {
     // Use insertion sort for small arrays
     let length = 1 + right - left
     if (length <= 20)
-      return Sorting._insertionSort(a, left, right)
+      return Sorting._insertionSort(a, left, right, compare)
 
     // Set the pivot
-    let pivot = Sorting.medianOfThree(a, left, right)
+    let pivot = Sorting.medianOfThree(a, left, right, compare)
     let p = Math.floor(left + length / 2)
 
     // Move pivot to next to last position
@@ -85,8 +85,8 @@ let Sorting =
     // Partition the array
     for ( ; ; )
     {
-      while (a[++i] < pivot) {}
-      while (a[--j] > pivot) {}
+      while (compare(a[++i], pivot) < 0) {}
+      while (compare(a[--j], pivot) > 0) {}
 
       if (i < j)
         Sorting.swap(a, i, j)
@@ -98,14 +98,14 @@ let Sorting =
     Sorting.swap(a, i, right - 1)
 
     // Sort the left and right subarrays
-    Sorting._quicksort(a, left, i - 1)
-    Sorting._quicksort(a, i + 1, right)
+    Sorting._quicksort(a, left, i - 1, compare)
+    Sorting._quicksort(a, i + 1, right, compare)
   },
 
   // Quicksorts the given array in place.
-  quicksort2: (a) =>
+  quicksort2: (a, compare=Sorting.compare) =>
   {
-    Sorting._quicksort2(a, 0, a.length - 1)
+    Sorting._quicksort2(a, 0, a.length - 1, compare)
     return a
   },
 
@@ -128,8 +128,8 @@ let Sorting =
         break
     }
 
-    Sorting._quicksort(a, left, i)
-    Sorting._quicksort(a, i, right)
+    Sorting._quicksort(a, left, i, compare)
+    Sorting._quicksort(a, i, right, compare)
   },
 
 
@@ -142,14 +142,14 @@ let Sorting =
   },
 
   // Estimates the subarray median by sorting left, right, and center.
-  medianOfThree: (array, left, right) =>
+  medianOfThree: (array, left, right, compare=Sorting.compare) =>
   {
     let length = 1 + right - left
     let middle = Math.floor(left + length / 2)
 
-    if (array[left] > array[right]) Sorting.swap(array, left, right)
-    if (array[left] > array[middle]) Sorting.swap(array, left, middle)
-    if (array[middle] > array[right]) Sorting.swap(array, middle, right)
+    if (compare(array[left], array[right]) > 0) Sorting.swap(array, left, right)
+    if (compare(array[left], array[middle]) > 0) Sorting.swap(array, left, middle)
+    if (compare(array[middle], array[right]) > 0) Sorting.swap(array, middle, right)
 
     let median = array[middle]
     return median
