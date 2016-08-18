@@ -42,7 +42,14 @@ let Sorting =
   // Mergesorts the given array in place.
   mergesort: (a) =>
   {
-    let result = Sorting._mergesort(a, 0, a.length - 1)
+    Sorting._mergesort(a, 0, a.length - 1)
+    return a
+  },
+
+  // Mergesorts the given array.
+  mergesort2: (a) =>
+  {
+    let result = Sorting._mergesort2(a, 0, a.length - 1)
     for (let i = 0; i < a.length; i++)
       a[i] = result[i]
     return a
@@ -51,8 +58,42 @@ let Sorting =
   // Mergesorts the given subarray.
   _mergesort: (a, left, right) =>
   {
-    let result = []
+    if (left < right)
+    {
+      let center = Math.floor(left + (right - left) / 2)
+      Sorting._mergesort(a, left, center)
+      Sorting._mergesort(a, center + 1, right)
+      Sorting._merge(a, left, center, right)
+    }
+  },
+
+  // Merges the given partitioned subarray in place.
+  _merge: (a, left, center, right) =>
+  {
+    let temp = []
     let length = right - left + 1
+
+    // Merge the sorted subarrays
+    for (let i = 0, p1 = left, p2 = center + 1; i < length; i++)
+    {
+      if (p2 > right || p1 <= center && a[p1] < a[p2])
+        temp.push(a[p1++])
+      else
+        temp.push(a[p2++])
+    }
+
+    // Fill subarray with merged values
+    for (let i = 0; i < length; i++)
+    {
+      a[left + i] = temp[i]
+    }
+  },
+
+  // Mergesorts the given subarray.
+  _mergesort2: (a, left, right) =>
+  {
+    let length = right - left + 1
+    let result = []
     if (length == 1)
     {
       result.push(a[left])
@@ -67,8 +108,8 @@ let Sorting =
     else if (length > 2)
     {
       let center = Math.floor(left + (right - left) / 2)
-      let list1 = Sorting._mergesort(a, left, center)
-      let list2 = Sorting._mergesort(a, center + 1, right)
+      let list1 = Sorting._mergesort2(a, left, center)
+      let list2 = Sorting._mergesort2(a, center + 1, right)
 
       for (let i = 0, p1 = 0, p2 = 0; i < length; i++)
       {
@@ -214,6 +255,7 @@ class Tests
       'defaultSort',
       'insertionSort',
       'mergesort',
+      'mergesort2',
       'quicksort',
       'quicksort2'
     ])
@@ -221,6 +263,7 @@ class Tests
     this.testSortPerformance([
       'defaultSort',
       'mergesort',
+      'mergesort2',
       'quicksort',
       'quicksort2',
     ])
