@@ -172,6 +172,7 @@ let Sorting =
   // Quicksorts the given subarray in place, optimized for simplicity.
   _quicksort2: (a, left, right) =>
   {
+    if (right <= left) return
     let p = Math.floor(left + (right - left)/2)
     let pivot = a[p]
     let i = left
@@ -188,8 +189,8 @@ let Sorting =
         break
     }
 
-    Sorting._quicksort(a, left, i)
-    Sorting._quicksort(a, i, right)
+    Sorting._quicksort2(a, left, i - 1)
+    Sorting._quicksort2(a, i + 1, right)
   },
 }
 
@@ -285,7 +286,7 @@ class Tests
   {
     log(`Testing performance for ${name}`)
 
-    let benchmarks = [ 100, 10E3, 100E3, 1E6 ]
+    let benchmarks = [ 101, 10E3, 100E3, 1E6 ]
     let results = []
 
     for (let b in benchmarks)
