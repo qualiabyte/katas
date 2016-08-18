@@ -39,6 +39,50 @@ let Sorting =
   // Heapsort
   // Mergesort
 
+  // Mergesorts the given array in place.
+  mergesort: (a) =>
+  {
+    let result = Sorting._mergesort(a, 0, a.length - 1)
+    for (let i = 0; i < a.length; i++)
+      a[i] = result[i]
+    return a
+  },
+
+  // Mergesorts the given subarray.
+  _mergesort: (a, left, right) =>
+  {
+    let result = []
+    let length = right - left + 1
+    if (length == 1)
+    {
+      result.push(a[left])
+    }
+    else if (length == 2)
+    {
+      if (a[left] > a[right])
+        Sorting.swap(a, left, right)
+      result.push(a[left])
+      result.push(a[right])
+    }
+    else if (length > 2)
+    {
+      let center = Math.floor(left + (right - left) / 2)
+      let list1 = Sorting._mergesort(a, left, center)
+      let list2 = Sorting._mergesort(a, center + 1, right)
+
+      for (let i = 0, p1 = 0, p2 = 0; i < length; i++)
+      {
+        if (p2 == list2.length ||
+            p1 < list1.length &&
+            list1[p1] < list2[p2])
+          result.push(list1[p1++])
+        else
+          result.push(list2[p2++])
+      }
+    }
+    return result
+  },
+
   // Compares given elements numerically.
   compare: (a, b) =>
   {
@@ -169,12 +213,14 @@ class Tests
     this.testSortMethods([
       'defaultSort',
       'insertionSort',
+      'mergesort',
       'quicksort',
       'quicksort2'
     ])
 
     this.testSortPerformance([
       'defaultSort',
+      'mergesort',
       'quicksort',
       'quicksort2',
     ])
