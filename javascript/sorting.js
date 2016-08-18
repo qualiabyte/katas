@@ -15,9 +15,9 @@ let Sorting =
   },
 
   // Insertion sorts the given array in place.
-  insertionSort: (a) =>
+  insertionSort: (a, compare=Sorting.compare) =>
   {
-    Sorting._insertionSort(a, 0, a.length - 1)
+    Sorting._insertionSort(a, 0, a.length - 1, compare)
     return a
   },
 
@@ -68,7 +68,7 @@ let Sorting =
   },
 
   // Insertion sorts the given subarray in place.
-  _insertionSort: (a, start, end) =>
+  _insertionSort: (a, start, end, compare) =>
   {
     for (let i = start; i < end; i++)
     {
@@ -78,7 +78,7 @@ let Sorting =
 
       for (let j = i + 1; j <= end; j++)
       {
-        if (a[j] < smallest)
+        if (compare(a[j], smallest) < 0)
         {
           smallest = a[j]
           smallestPos = j
