@@ -308,12 +308,25 @@ class Tests
 
   testSortPerformance(names)
   {
+    let results = []
     for (let n in names)
     {
       let name = names[n]
       let method = Sorting[name]
       let result = this.testSortPerformanceFor(method, name)
-      log(`Result: ${JSON.stringify(result)}`)
+      results.push(result)
+    }
+    for (let result of results)
+    {
+      let benchmarks = result
+      log(`\nResults for ${benchmarks[0].name}`)
+      for (let benchmark of benchmarks)
+      {
+        let name = benchmark.name
+        let size = (benchmark.size + "        ").slice(0, 8)
+        let time = benchmark.time + "s"
+        log(`${name} ${size} ${time}`)
+      }
     }
   }
 
@@ -333,7 +346,6 @@ class Tests
         size: N,
         time: Infinity
       }
-      log(`Running benchmark with N = ${N}`)
 
       // Fill test array with sequential values
       let array = []
