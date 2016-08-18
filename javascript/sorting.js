@@ -7,7 +7,7 @@ let log = function()
 
 let Sorting =
 {
-  // Default Sort
+  // Sorts the given array in place, using the default sort method.
   defaultSort: (a, compare) =>
   {
     compare = compare || Sorting.compare
@@ -21,24 +21,6 @@ let Sorting =
     return a
   },
 
-  // Quicksorts the given array in place.
-  quicksort: (a, compare=Sorting.compare) =>
-  {
-    Sorting._quicksort(a, 0, a.length - 1, compare)
-    return a
-  },
-
-  // Quicksorts the given array in place, optimized for simplicity.
-  quicksort2: (a) =>
-  {
-    Sorting._quicksort2(a, 0, a.length - 1)
-    return a
-  },
-
-  // Shellsort
-  // Heapsort
-  // Mergesort
-
   // Mergesorts the given array in place.
   mergesort: (a) =>
   {
@@ -47,14 +29,31 @@ let Sorting =
     return a
   },
 
-  // Mergesorts the given array.
-  mergesort2: (a) =>
+  // Quicksorts the given array in place.
+  quicksort: (a, compare=Sorting.compare) =>
+  {
+    Sorting._quicksort(a, 0, a.length - 1, compare)
+    return a
+  },
+
+  // Mergesorts the given array, optimized for simplicity.
+  simpleMergesort: (a) =>
   {
     let result = Sorting._mergesort2(a, 0, a.length - 1)
     for (let i = 0; i < a.length; i++)
       a[i] = result[i]
     return a
   },
+
+  // Quicksorts the given array in place, optimized for simplicity.
+  simpleQuicksort: (a) =>
+  {
+    Sorting._quicksort2(a, 0, a.length - 1)
+    return a
+  },
+
+  // Shellsort
+  // Heapsort
 
   // Mergesorts the given subarray in place.
   _mergesort: (a, left, right, temp) =>
@@ -255,17 +254,17 @@ class Tests
       'defaultSort',
       'insertionSort',
       'mergesort',
-      'mergesort2',
       'quicksort',
-      'quicksort2'
+      'simpleMergesort',
+      'simpleQuicksort',
     ])
 
     this.testSortPerformance([
       'defaultSort',
       'mergesort',
-      'mergesort2',
       'quicksort',
-      'quicksort2',
+      'simpleMergesort',
+      'simpleQuicksort',
     ])
     log("Passed Sorting methods!")
   }
