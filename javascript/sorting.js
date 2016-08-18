@@ -7,6 +7,20 @@ let log = function()
 
 let Sorting =
 {
+  // Compares given elements numerically.
+  compare: (a, b) =>
+  {
+    return a - b
+  },
+
+  // Swaps array values at given indices.
+  swap: (a, i, j) =>
+  {
+    let tmp = a[i]
+    a[i] = a[j]
+    a[j] = tmp
+  },
+
   // Sorts the given array in place, using the default sort method.
   defaultSort: (a, compare) =>
   {
@@ -29,13 +43,6 @@ let Sorting =
     return a
   },
 
-  // Quicksorts the given array in place.
-  quicksort: (a, compare=Sorting.compare) =>
-  {
-    Sorting._quicksort(a, 0, a.length - 1, compare)
-    return a
-  },
-
   // Mergesorts the given array, optimized for simplicity.
   simpleMergesort: (a) =>
   {
@@ -52,103 +59,11 @@ let Sorting =
     return a
   },
 
-  // Shellsort
-  // Heapsort
-
-  // Mergesorts the given subarray in place.
-  _mergesort: (a, left, right, temp) =>
+  // Quicksorts the given array in place.
+  quicksort: (a, compare=Sorting.compare) =>
   {
-    if (left < right)
-    {
-      let center = Math.floor(left + (right - left) / 2)
-      Sorting._mergesort(a, left, center, temp)
-      Sorting._mergesort(a, center + 1, right, temp)
-      Sorting._merge(a, left, center, right, temp)
-    }
-  },
-
-  // Merges the given partitioned subarray in place.
-  _merge: (a, left, center, right, temp) =>
-  {
-    let length = right - left + 1
-
-    // Merge the sorted subarrays
-    for (let i = 0, p1 = left, p2 = center + 1; i < length; i++)
-    {
-      if (p2 > right || p1 <= center && a[p1] < a[p2])
-        temp[left + i] = a[p1++]
-      else
-        temp[left + i] = a[p2++]
-    }
-
-    // Fill subarray with merged values
-    for (let i = 0; i < length; i++)
-    {
-      a[left + i] = temp[left + i]
-    }
-  },
-
-  // Mergesorts the given subarray.
-  _mergesort2: (a, left, right) =>
-  {
-    let length = right - left + 1
-    let result = []
-    if (length == 1)
-    {
-      result.push(a[left])
-    }
-    else if (length == 2)
-    {
-      if (a[left] > a[right])
-        Sorting.swap(a, left, right)
-      result.push(a[left])
-      result.push(a[right])
-    }
-    else if (length > 2)
-    {
-      let center = Math.floor(left + (right - left) / 2)
-      let list1 = Sorting._mergesort2(a, left, center)
-      let list2 = Sorting._mergesort2(a, center + 1, right)
-
-      for (let i = 0, p1 = 0, p2 = 0; i < length; i++)
-      {
-        if (p2 == list2.length ||
-            p1 < list1.length &&
-            list1[p1] < list2[p2])
-          result.push(list1[p1++])
-        else
-          result.push(list2[p2++])
-      }
-    }
-    return result
-  },
-
-  // Compares given elements numerically.
-  compare: (a, b) =>
-  {
-    return a - b
-  },
-
-  // Swaps array values at given indices.
-  swap: (a, i, j) =>
-  {
-    let tmp = a[i]
-    a[i] = a[j]
-    a[j] = tmp
-  },
-
-  // Estimates the subarray median by sorting left, right, and center.
-  medianOfThree: (array, left, right, compare=Sorting.compare) =>
-  {
-    let length = 1 + right - left
-    let middle = Math.floor(left + length / 2)
-
-    if (compare(array[left], array[right]) > 0) Sorting.swap(array, left, right)
-    if (compare(array[left], array[middle]) > 0) Sorting.swap(array, left, middle)
-    if (compare(array[middle], array[right]) > 0) Sorting.swap(array, middle, right)
-
-    let median = array[middle]
-    return median
+    Sorting._quicksort(a, 0, a.length - 1, compare)
+    return a
   },
 
   // Insertion sorts the given subarray in place.
@@ -177,6 +92,81 @@ let Sorting =
     }
   },
 
+  // Merges the given partitioned subarray in place.
+  _merge: (a, left, center, right, temp) =>
+  {
+    let length = right - left + 1
+
+    // Merge the sorted subarrays
+    for (let i = 0, p1 = left, p2 = center + 1; i < length; i++)
+    {
+      if (p2 > right || p1 <= center && a[p1] < a[p2])
+        temp[left + i] = a[p1++]
+      else
+        temp[left + i] = a[p2++]
+    }
+
+    // Fill subarray with merged values
+    for (let i = 0; i < length; i++)
+    {
+      a[left + i] = temp[left + i]
+    }
+  },
+
+  // Mergesorts the given subarray in place.
+  _mergesort: (a, left, right, temp) =>
+  {
+    if (left < right)
+    {
+      let center = Math.floor(left + (right - left) / 2)
+      Sorting._mergesort(a, left, center, temp)
+      Sorting._mergesort(a, center + 1, right, temp)
+      Sorting._merge(a, left, center, right, temp)
+    }
+  },
+
+  // Mergesorts the given subarray.
+  _mergesort2: (a, left, right) =>
+  {
+    let length = right - left + 1
+    let result = []
+    if (length == 1)
+    {
+      result.push(a[left])
+    }
+    else if (length >= 2)
+    {
+      let center = Math.floor(left + (right - left) / 2)
+      let list1 = Sorting._mergesort2(a, left, center)
+      let list2 = Sorting._mergesort2(a, center + 1, right)
+
+      for (let i = 0, p1 = 0, p2 = 0; i < length; i++)
+      {
+        if (p2 == list2.length ||
+            p1 < list1.length &&
+            list1[p1] < list2[p2])
+          result.push(list1[p1++])
+        else
+          result.push(list2[p2++])
+      }
+    }
+    return result
+  },
+
+  // Estimates the subarray median by sorting left, right, and center.
+  _medianOfThree: (array, left, right, compare=Sorting.compare) =>
+  {
+    let length = 1 + right - left
+    let middle = Math.floor(left + length / 2)
+
+    if (compare(array[left], array[right]) > 0) Sorting.swap(array, left, right)
+    if (compare(array[left], array[middle]) > 0) Sorting.swap(array, left, middle)
+    if (compare(array[middle], array[right]) > 0) Sorting.swap(array, middle, right)
+
+    let median = array[middle]
+    return median
+  },
+
   // Quicksorts the given subarray in place.
   _quicksort: (a, left, right, compare=Sorting.compare) =>
   {
@@ -186,7 +176,7 @@ let Sorting =
       return Sorting._insertionSort(a, left, right, compare)
 
     // Set the pivot
-    let pivot = Sorting.medianOfThree(a, left, right, compare)
+    let pivot = Sorting._medianOfThree(a, left, right, compare)
     let p = Math.floor(left + length / 2)
 
     // Move pivot to next to last position
