@@ -42,7 +42,8 @@ let Sorting =
   // Mergesorts the given array in place.
   mergesort: (a) =>
   {
-    Sorting._mergesort(a, 0, a.length - 1)
+    let temp = []
+    Sorting._mergesort(a, 0, a.length - 1, temp)
     return a
   },
 
@@ -55,37 +56,36 @@ let Sorting =
     return a
   },
 
-  // Mergesorts the given subarray.
-  _mergesort: (a, left, right) =>
+  // Mergesorts the given subarray in place.
+  _mergesort: (a, left, right, temp) =>
   {
     if (left < right)
     {
       let center = Math.floor(left + (right - left) / 2)
-      Sorting._mergesort(a, left, center)
-      Sorting._mergesort(a, center + 1, right)
-      Sorting._merge(a, left, center, right)
+      Sorting._mergesort(a, left, center, temp)
+      Sorting._mergesort(a, center + 1, right, temp)
+      Sorting._merge(a, left, center, right, temp)
     }
   },
 
   // Merges the given partitioned subarray in place.
-  _merge: (a, left, center, right) =>
+  _merge: (a, left, center, right, temp) =>
   {
-    let temp = []
     let length = right - left + 1
 
     // Merge the sorted subarrays
     for (let i = 0, p1 = left, p2 = center + 1; i < length; i++)
     {
       if (p2 > right || p1 <= center && a[p1] < a[p2])
-        temp.push(a[p1++])
+        temp[left + i] = a[p1++]
       else
-        temp.push(a[p2++])
+        temp[left + i] = a[p2++]
     }
 
     // Fill subarray with merged values
     for (let i = 0; i < length; i++)
     {
-      a[left + i] = temp[i]
+      a[left + i] = temp[left + i]
     }
   },
 
