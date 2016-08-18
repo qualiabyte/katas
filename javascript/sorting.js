@@ -43,15 +43,6 @@ let Sorting =
     return a
   },
 
-  // Mergesorts the given array, optimized for simplicity.
-  simpleMergesort: (a) =>
-  {
-    let result = Sorting._mergesort2(a, 0, a.length - 1)
-    for (let i = 0; i < a.length; i++)
-      a[i] = result[i]
-    return a
-  },
-
   // Quicksorts the given array in place, optimized for simplicity.
   simpleQuicksort: (a) =>
   {
@@ -123,34 +114,6 @@ let Sorting =
       Sorting._mergesort(a, center + 1, right, temp)
       Sorting._merge(a, left, center, right, temp)
     }
-  },
-
-  // Mergesorts the given subarray.
-  _mergesort2: (a, left, right) =>
-  {
-    let length = right - left + 1
-    let result = []
-    if (length == 1)
-    {
-      result.push(a[left])
-    }
-    else if (length >= 2)
-    {
-      let center = Math.floor(left + (right - left) / 2)
-      let list1 = Sorting._mergesort2(a, left, center)
-      let list2 = Sorting._mergesort2(a, center + 1, right)
-
-      for (let i = 0, p1 = 0, p2 = 0; i < length; i++)
-      {
-        if (p2 == list2.length ||
-            p1 < list1.length &&
-            list1[p1] < list2[p2])
-          result.push(list1[p1++])
-        else
-          result.push(list2[p2++])
-      }
-    }
-    return result
   },
 
   // Estimates the subarray median by sorting left, right, and center.
@@ -245,7 +208,6 @@ class Tests
       'insertionSort',
       'mergesort',
       'quicksort',
-      'simpleMergesort',
       'simpleQuicksort',
     ])
 
@@ -253,7 +215,6 @@ class Tests
       'defaultSort',
       'mergesort',
       'quicksort',
-      'simpleMergesort',
       'simpleQuicksort',
     ])
     log("Passed Sorting methods!")
