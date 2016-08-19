@@ -83,6 +83,119 @@ let Sorting =
     }
   },
 
+  heapsort: (a) =>
+  {
+    Sorting._heapsort(a)
+    return a
+  },
+
+  _heapsort: (a) =>
+  {
+    // Build heap
+    let heap = Sorting._buildHeap(a)
+
+    // Extract sorted values
+    let sorted = []
+    while (Sorting._heapMin(heap) != null)
+    {
+      let min = Sorting._heapDeleteMin(heap)
+      sorted.push(min)
+    }
+
+    // Fill original array with sorted values
+    for (let i = 0; i < a.length; i++)
+      a[i] = sorted[i]
+  },
+
+  _buildHeap: (a) =>
+  {
+    let heap = []
+    for (let item of a)
+    {
+      Sorting._heapInsert(heap, item)
+    }
+    return heap
+  },
+
+  _heapMin: (heap) =>
+  {
+    return heap[1]
+  },
+
+  _heapDeleteMin: (heap, node=1) =>
+  {
+    let min = Sorting._heapDelete(heap, node)
+    return min
+  },
+
+  _heapDelete: (heap, node) =>
+  {
+    let value = heap[node]
+    let left = 2 * node
+    let right = 2 * node + 1
+    if (heap[node] == null)
+    {
+      return null
+    }
+    else if (heap[left] == null && heap[right] == null)
+    {
+      heap[node] = null
+    }
+    else if (heap[right] == null)
+    {
+      heap[node] = heap[left]
+      Sorting._heapDeleteMin(heap, left)
+    }
+    else if (heap[left] == null)
+    {
+      heap[node] = heap[right]
+      Sorting._heapDeleteMin(heap, right)
+    }
+    else if (heap[left] < heap[right])
+    {
+      heap[node] = heap[left]
+      Sorting._heapDeleteMin(heap, left)
+    }
+    else
+    {
+      heap[node] = heap[right]
+      Sorting._heapDeleteMin(heap, right)
+    }
+    return value
+  },
+
+  _heapInsert: (heap, item, root=1) =>
+  {
+    let left = 2 * root
+    let right = 2 * root + 1
+
+    // Swap if item smaller than root
+    if (heap[root] != null && heap[root] > item)
+    {
+      let temp = heap[root]
+      heap[root] = item
+      item = temp
+    }
+
+    // Insert item into root node
+    if (heap[root] == null)
+    {
+      heap[root] = item
+    }
+    else if (heap[left] == null)
+    {
+      heap[left] = item
+    }
+    else if (heap[right] == null)
+    {
+      heap[right] = item
+    }
+    else if (heap[left] != null && heap[right] != null)
+    {
+      Sorting._heapInsert(heap, item, Math.random() < 0.5 ? left : right)
+    }
+  },
+
   // Merges the given partitioned subarray in place.
   _merge: (a, left, center, right, temp) =>
   {
@@ -207,6 +320,7 @@ class Tests
     this.testSortMethods([
       'defaultSort',
       'insertionSort',
+      'heapsort',
       'mergesort',
       'quicksort',
       'simpleQuicksort',
@@ -214,6 +328,7 @@ class Tests
 
     this.testSortPerformance([
       'defaultSort',
+      'heapsort',
       'mergesort',
       'quicksort',
       'simpleQuicksort',
