@@ -95,16 +95,10 @@ let Sorting =
     let heap = Sorting._buildHeap(a)
 
     // Extract sorted values
-    let sorted = []
-    while (Sorting._heapMin(heap) != null)
-    {
-      let min = Sorting._heapDeleteMin(heap)
-      sorted.push(min)
-    }
-
-    // Fill original array with sorted values
     for (let i = 0; i < a.length; i++)
-      a[i] = sorted[i]
+    {
+      a[i] = Sorting._heapDeleteMin(heap)
+    }
   },
 
   _buildHeap: (a) =>
