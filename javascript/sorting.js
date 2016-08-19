@@ -91,17 +91,17 @@ let Sorting =
 
   _heapsort: (a) =>
   {
-    // Build heap
-    let heap = Sorting._buildHeap(a)
+    // Build max heap
+    let heap = Sorting._buildMaxHeap(a)
 
     // Extract sorted values
-    for (let i = 0; i < a.length; i++)
+    for (let i = a.length - 1; i >= 0; i--)
     {
-      a[i] = Sorting._heapDeleteMin(heap)
+      a[i] = Sorting._heapDeleteMax(heap)
     }
   },
 
-  _buildHeap: (a) =>
+  _buildMaxHeap: (a) =>
   {
     let heap = []
     for (let item of a)
@@ -111,15 +111,10 @@ let Sorting =
     return heap
   },
 
-  _heapMin: (heap) =>
+  _heapDeleteMax: (heap, node=0) =>
   {
-    return heap[0]
-  },
-
-  _heapDeleteMin: (heap, node=0) =>
-  {
-    let min = Sorting._heapDelete(heap, node)
-    return min
+    let max = Sorting._heapDelete(heap, node)
+    return max
   },
 
   _heapDelete: (heap, node) =>
@@ -138,22 +133,22 @@ let Sorting =
     else if (heap[right] == null)
     {
       heap[node] = heap[left]
-      Sorting._heapDeleteMin(heap, left)
+      Sorting._heapDeleteMax(heap, left)
     }
     else if (heap[left] == null)
     {
       heap[node] = heap[right]
-      Sorting._heapDeleteMin(heap, right)
+      Sorting._heapDeleteMax(heap, right)
     }
-    else if (heap[left] < heap[right])
+    else if (heap[left] > heap[right])
     {
       heap[node] = heap[left]
-      Sorting._heapDeleteMin(heap, left)
+      Sorting._heapDeleteMax(heap, left)
     }
     else
     {
       heap[node] = heap[right]
-      Sorting._heapDeleteMin(heap, right)
+      Sorting._heapDeleteMax(heap, right)
     }
     return value
   },
@@ -163,8 +158,8 @@ let Sorting =
     let left = 2 * root + 1
     let right = 2 * root + 2
 
-    // Swap if item smaller than root
-    if (heap[root] != null && heap[root] > item)
+    // Swap if item larger than root
+    if (heap[root] != null && heap[root] < item)
     {
       let temp = heap[root]
       heap[root] = item
