@@ -83,106 +83,64 @@ let Sorting =
     }
   },
 
+  // Heapsorts the given array in place.
   heapsort: (a) =>
   {
     Sorting._heapsort(a)
     return a
   },
 
+  // Heapsorts the given array in place.
   _heapsort: (a) =>
   {
     // Build max heap
-    let heap = Sorting._buildMaxHeap(a)
+    Sorting._heapify(a)
 
     // Extract sorted values
     for (let i = a.length - 1; i >= 0; i--)
     {
-      a[i] = Sorting._heapDeleteMax(heap)
+      Sorting.swap(a, 0, i)
+      Sorting._heapPercolateDown(a, 0, i)
     }
   },
 
-  _buildMaxHeap: (a) =>
+  // Converts the given array to a max heap, in place.
+  _heapify: (a) =>
   {
-    let heap = []
-    for (let item of a)
-    {
-      Sorting._heapInsert(heap, item)
-    }
-    return heap
+    // Percolate parents down
+    for (let i = Math.ceil(a.length / 2); i >= 0; i--)
+      Sorting._heapPercolateDown(a, i, a.length)
   },
 
-  _heapDeleteMax: (heap, node=0) =>
+  // Percolates the given node down the heap.
+  _heapPercolateDown: (heap, node, size=heap.length) =>
   {
-    let max = Sorting._heapDelete(heap, node)
-    return max
-  },
-
-  _heapDelete: (heap, node) =>
-  {
-    let value = heap[node]
     let left = 2 * node + 1
     let right = 2 * node + 2
-    if (heap[node] == null)
+    let last = size - 1
+    let larger = heap[left] > heap[right] || right > last
+      ? left
+      : right
+
+    if (left > last)
     {
-      return null
+      return
     }
-    else if (heap[left] == null && heap[right] == null)
+    else if (heap[node] < heap[larger])
     {
-      heap[node] = null
+      Sorting.swap(heap, node, larger)
+      Sorting._heapPercolateDown(heap, larger, size)
     }
-    else if (heap[right] == null)
-    {
-      heap[node] = heap[left]
-      Sorting._heapDeleteMax(heap, left)
-    }
-    else if (heap[left] == null)
-    {
-      heap[node] = heap[right]
-      Sorting._heapDeleteMax(heap, right)
-    }
-    else if (heap[left] > heap[right])
-    {
-      heap[node] = heap[left]
-      Sorting._heapDeleteMax(heap, left)
-    }
-    else
-    {
-      heap[node] = heap[right]
-      Sorting._heapDeleteMax(heap, right)
-    }
-    return value
   },
 
-  _heapInsert: (heap, item, root=0) =>
+  // Deletes the max element from the heap.
+  _heapDeleteMax: (heap, node=0, size=heap.length) =>
   {
-    let left = 2 * root + 1
-    let right = 2 * root + 2
-
-    // Swap if item larger than root
-    if (heap[root] != null && heap[root] < item)
-    {
-      let temp = heap[root]
-      heap[root] = item
-      item = temp
-    }
-
-    // Insert item into root node
-    if (heap[root] == null)
-    {
-      heap[root] = item
-    }
-    else if (heap[left] == null)
-    {
-      heap[left] = item
-    }
-    else if (heap[right] == null)
-    {
-      heap[right] = item
-    }
-    else if (heap[left] != null && heap[right] != null)
-    {
-      Sorting._heapInsert(heap, item, Math.random() < 0.5 ? left : right)
-    }
+    let max = heap[node]
+    let last = heap[--size]
+    heap[node] = last
+    Sorting._heapPercolateDown(heap, node, size)
+    return max
   },
 
   // Merges the given partitioned subarray in place.
