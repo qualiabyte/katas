@@ -113,10 +113,10 @@ let Sorting =
 
   _heapMin: (heap) =>
   {
-    return heap[1]
+    return heap[0]
   },
 
-  _heapDeleteMin: (heap, node=1) =>
+  _heapDeleteMin: (heap, node=0) =>
   {
     let min = Sorting._heapDelete(heap, node)
     return min
@@ -125,8 +125,8 @@ let Sorting =
   _heapDelete: (heap, node) =>
   {
     let value = heap[node]
-    let left = 2 * node
-    let right = 2 * node + 1
+    let left = 2 * node + 1
+    let right = 2 * node + 2
     if (heap[node] == null)
     {
       return null
@@ -158,10 +158,10 @@ let Sorting =
     return value
   },
 
-  _heapInsert: (heap, item, root=1) =>
+  _heapInsert: (heap, item, root=0) =>
   {
-    let left = 2 * root
-    let right = 2 * root + 1
+    let left = 2 * root + 1
+    let right = 2 * root + 2
 
     // Swap if item smaller than root
     if (heap[root] != null && heap[root] > item)
