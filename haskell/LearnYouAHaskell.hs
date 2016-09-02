@@ -1,6 +1,25 @@
 
 import Assert
 
+-- Chapter 4: Syntax in Functions
+
+-- Chapter 4.1: Pattern Matching
+
+-- Factorial
+factorial :: (Integral a) => a -> a
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
+
+testFactorial = do
+  assert ((factorial 0) == 1) "Factorial of zero should be one"
+  assert ((factorial 2) == 2) "Factorial of two should be two"
+  assert ((factorial 3) == 6) "Factorial of three should be six"
+
+testChapter4 = do
+  putStrLn "Running Chapter 4 tests..."
+  testFactorial
+  putStrLn "Finished Chapter 4 tests..."
+
 -- Chapter 6: Recursion
 
 -- Finds the maximum value in a list.
@@ -49,5 +68,6 @@ testChapter6 = do
 
 main = do
   putStrLn "Running Learn You A Haskell tests..."
+  testChapter4
   testChapter6
   putStrLn "Passed All Tests!"
