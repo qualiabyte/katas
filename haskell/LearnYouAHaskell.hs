@@ -38,11 +38,13 @@ replicate' n x
     | otherwise = x:replicate' (n-1) x
 
 -- Takes first `n` items from a list.
-take' :: (Num i, Ord i) => i -> [a] -> [a]
-take' n _
-    | n <= 0   = []
-take' _ []     = []
-take' n (x:xs) = x : take' (n-1) xs
+take' :: (Num i, Ord i, Eq a) => i -> [a] -> [a]
+take' n xs
+  | n <= 0    = []
+  | xs == []  = []
+  | otherwise = x' : take' (n-1) xs'
+  where x' = head xs
+        xs' = tail xs
 
 testTake = do
   assert ((take 0 [1, 2, 3]) == []) "Should take zero values"
