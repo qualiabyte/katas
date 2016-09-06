@@ -28,18 +28,18 @@ public class Dijkstra {
       Edge edge = queue.poll();
       Vertex destination = edge.to;
 
-      if (destination.known == true) {
-        continue;
-      }
-      else {
+      // Update destination distance
+      if (destination.known == false ||
+          destination.distance > edge.from.distance + edge.weight) {
         destination.distance = edge.from.distance + edge.weight;
         destination.path = edge.from;
         destination.known = true;
       }
 
-      // Add unsolved edges to queue
+      // Add improvable edges to queue
       for (Edge adjacent : destination.edges) {
-        if (adjacent.to.known == false) {
+        if (adjacent.to.known == false ||
+            adjacent.to.distance > destination.distance + adjacent.weight) {
           queue.add(adjacent);
         }
       }
