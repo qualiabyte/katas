@@ -20,6 +20,7 @@ public class Tests
     }
     catch (Error e)
     {
+      log(e.toString());
       System.exit(1);
     }
   }

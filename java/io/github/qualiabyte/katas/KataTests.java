@@ -9,6 +9,7 @@ public class KataTests extends Tests
     HashTests.run();
     BinaryTreeTests.run();
     AVLTreeTests.run();
+    DijkstraTests.run();
     log("Passed Kata Tests!");
   }
 
@@ -20,6 +21,7 @@ public class KataTests extends Tests
     }
     catch (Error e)
     {
+      log(e.toString());
       System.exit(1);
     }
   }
