@@ -20,7 +20,7 @@ testChapter4 = do
   testFactorial
   putStrLn "Finished Chapter 4 tests..."
 
--- Chapter 6: Recursion
+-- Chapter 5: Recursion
 
 -- Finds the maximum value in a list.
 maximum' :: (Ord a) => [a] -> a
@@ -61,15 +61,34 @@ testReplicate = do
   assert ((replicate 0 5) == []) "Replicate should repeat item zero times"
   assert ((replicate 3 5) == [5, 5, 5]) "Replicate should repeat item three times"
 
-testChapter6 = do
-  putStrLn "Running Chapter 6 tests..."
+-- Chapter 6: Higher Order Functions
+
+-- 6.1 Curried Functions
+
+testMax = do
+  assert ((max 4 5) == ((max 4) 5)) "Demonstrate max is a curried function"
+
+testPartialApplication = do
+  let f = max 4
+  assert ((f 5) == 5) "Demonstrate partial application"
+  assert ((f 3) == 4) "Demonstrate partial application"
+
+testChapter5 = do
+  putStrLn "Running Chapter 5 tests..."
   testMaximum
   testReplicate
   testTake
+  putStrLn "Finished Chapter 5 tests..."
+
+testChapter6 = do
+  putStrLn "Running Chapter 6 tests..."
+  testMax
+  testPartialApplication
   putStrLn "Finished Chapter 6 tests..."
 
 main = do
   putStrLn "Running Learn You A Haskell tests..."
   testChapter4
+  testChapter5
   testChapter6
   putStrLn "Passed All Tests!"
