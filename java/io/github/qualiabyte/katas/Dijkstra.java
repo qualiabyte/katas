@@ -9,37 +9,36 @@ import io.github.qualiabyte.katas.dijkstra.*;
 public class Dijkstra {
 
   public static Graph shortestPaths(int startIndex, Graph graph) {
-    Vertex start = graph.nodes.get(startIndex);
-    PriorityQueue<Edge> queue = new PriorityQueue<Edge>(start.edges);
 
-    // Process start node
+    Vertex start = graph.nodes.get(startIndex);
     start.distance = 0;
     start.path = start;
-    start.known = true;
 
-    // Process remaining nodes
+    PriorityQueue<Vertex> queue = new PriorityQueue<Vertex>();
+    queue.add(start);
+
     Graph result = shortestPaths(graph, queue);
     return result;
   }
 
-  public static Graph shortestPaths(Graph graph, PriorityQueue<Edge> queue) {
+  public static Graph shortestPaths(Graph graph, PriorityQueue<Vertex> queue) {
 
     while (queue.peek() != null) {
-      Edge edge = queue.poll();
-      Vertex destination = edge.to;
-
-      // Update destination distance
-      if (destination.known == false ||
-          destination.distance > edge.from.distance + edge.weight) {
-        destination.distance = edge.from.distance + edge.weight;
-        destination.path = edge.from;
-        destination.known = true;
+      Vertex vertex = queue.poll();
+      if (vertex.known) {
+        continue;
+      }
+      else {
+        vertex.known = true;
       }
 
-      // Add improvable edges to queue
-      for (Edge adjacent : destination.edges) {
-        if (adjacent.to.known == false ||
-            adjacent.to.distance > destination.distance + adjacent.weight) {
+      // Process adjacent nodes
+      for (Edge edge : vertex.edges) {
+        Vertex adjacent = edge.to;
+        Double distance = vertex.distance + edge.weight;
+        if (distance < adjacent.distance) {
+          adjacent.distance = distance;
+          adjacent.path = vertex;
           queue.add(adjacent);
         }
       }
