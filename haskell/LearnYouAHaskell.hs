@@ -73,6 +73,35 @@ testPartialApplication = do
   assert ((f 5) == 5) "Demonstrate partial application"
   assert ((f 3) == 4) "Demonstrate partial application"
 
+testInfixSection = do
+  let f = ( `mod` 3)
+  let g = ( * 3)
+  assert (f 3 == 0) "Demonstrate infix mod 3"
+  assert (f 5 == 2) "Demonstrate infix mod 3"
+  assert (g 2 == 6) "Demonstrate infix multiply 3"
+  assert (g 3 == 9) "Demonstrate infix multiply 3"
+
+-- 6.2 Higher Order Functions
+
+applyTwice :: (a -> a) -> a -> a
+applyTwice f x = f (f x)
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith' a b c
+  | length b == 0 = []
+  | length c == 0 = []
+  | otherwise = (a (head b) (head c)) : zipWith' a (tail b) (tail c)
+
+testFunctionParameters = do
+  let double x = 2 * x
+  assert (applyTwice double 2 == 8) "Demonstrate function parameters"
+  assert (applyTwice double 10 == 40) "Demonstrate function parameters"
+  assert ((applyTwice ("Hello " ++) "!") == "Hello Hello !")
+         "Demonstrate infix sections as function parameters"
+
+testZipWith = do
+  assert ((zipWith' (+) [1, 2, 3] [4, 5, 6]) == [5, 7, 9]) "ZipWith should merge two lists with a function"
+
 testChapter5 = do
   putStrLn "Running Chapter 5 tests..."
   testMaximum
@@ -84,6 +113,9 @@ testChapter6 = do
   putStrLn "Running Chapter 6 tests..."
   testMax
   testPartialApplication
+  testInfixSection
+  testFunctionParameters
+  testZipWith
   putStrLn "Finished Chapter 6 tests..."
 
 main = do
