@@ -9,6 +9,7 @@ testToHeap = do
   let heap = toHeap 42
   let Just (value, h2) = extractMin heap
   assert (value == 42) "The heap should return the initial value"
+  assert (h2 == Empty) "The resulting heap should be empty"
 
 testHeapify = do
   putStrLn "Testing Heapify..."
