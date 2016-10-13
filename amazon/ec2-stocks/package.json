@@ -1,0 +1,19 @@
+{
+  "name": "stock-prices-ec2",
+  "version": "0.0.0",
+  "description": "Stock prices kata using Amazon EC2",
+  "main": "main.js",
+  "scripts": {},
+  "keywords": [
+    "amazon",
+    "ec2",
+    "dynamo",
+    "stock",
+    "kata"
+  ],
+  "author": "Tyler Florez <qualiabyte@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.6.8"
+  }
+}
